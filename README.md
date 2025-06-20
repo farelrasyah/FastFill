@@ -1,330 +1,268 @@
 # FastFill - Auto Form Filler Chrome Extension
 
-🚀 **FastFill** adalah ekstensi Chrome yang dirancang khusus untuk membantu QA tester dan developer dalam melakukan pengisian form otomatis untuk keperluan testing UI/UX.
+🚀 **Ekstensi Chrome untuk mengisi form secara otomatis dengan data template yang dapat disesuaikan. Ideal untuk QA testing dan development.**
 
-![FastFill Logo](https://img.shields.io/badge/FastFill-v1.0.0-blue.svg)
-![Chrome Extension](https://img.shields.io/badge/Chrome-Extension-green.svg)
-![Manifest V3](https://img.shields.io/badge/Manifest-V3-orange.svg)
-![License](https://img.shields.io/badge/License-MIT-yellow.svg)
+## 📋 Fitur Utama
 
-## 🎯 Fitur Utama
+- ✅ **Deteksi Form Otomatis** - Mendeteksi berbagai jenis input form (text, email, number, tel, date, select, checkbox, radio)
+- 🎯 **Template Data Fleksibel** - 3 template bawaan (QA Profile, User Profile, Dummy Profile) + custom templates
+- ⚡ **Fill Form Instan** - Mengisi form dengan satu klik melalui popup toolbar
+- 🎨 **UI Modern & Intuitif** - Interface yang clean dan mudah digunakan
+- 🔧 **Highly Configurable** - Pengaturan advanced untuk berbagai mode filling
+- 💾 **Local Storage** - Menyimpan template dan pengaturan secara lokal
+- 🔄 **Import/Export** - Backup dan share template dengan mudah
+- 📱 **Responsive Design** - Tampilan optimal di berbagai ukuran layar
 
-### ✨ Deteksi Form Otomatis
-- Mendeteksi berbagai jenis input: `text`, `email`, `number`, `tel`, `date`, `select`, `checkbox`, `radio`, `textarea`
-- Deteksi form secara real-time pada halaman web
-- Support untuk form dinamis dan AJAX
+## 🛠️ Teknologi
 
-### 📋 Template Data Predefined
-- **Profil QA Tester**: Data khusus untuk testing QA
-- **Profil User Normal**: Data user biasa untuk testing
-- **Profil Dummy Data**: Data dummy internasional
+- **Manifest V3** - Service Worker architecture terbaru
+- **Content Scripts** - Manipulasi DOM yang aman dan efisien
+- **Chrome Storage API** - Penyimpanan data lokal yang reliable
+- **Modern CSS** - Styling dengan CSS Grid/Flexbox dan CSS Variables
+- **Vanilla JavaScript** - No framework dependencies, lightweight & fast
 
-### 🎛️ Kontrol Manual
-- Popup interface yang user-friendly
-- Trigger autofill secara manual dengan satu klik
-- Pilihan template data yang dapat dikustomisasi
+## 📦 Instalasi
 
-### 🔧 Fitur Advanced
-- **Template Management**: Tambah, edit, hapus template custom
-- **Export/Import**: Backup dan share template data
-- **Smart Field Detection**: Identifikasi field berdasarkan nama, placeholder, dan ID
-- **Random Selection**: Checkbox dan radio button dipilih secara random
-- **Field Highlighting**: Visual feedback saat pengisian form
+### Metode 1: Install dari Chrome Web Store
+*(Coming soon)*
 
-## 📁 Struktur Project
+### Metode 2: Install Manual (Developer Mode)
 
-```
-FastFill/
-├── manifest.json          # Manifest V3 configuration
-├── content.js            # Content script untuk manipulasi DOM
-├── background.js         # Service worker untuk komunikasi
-├── popup.html           # Interface popup HTML
-├── popup.js             # Logic popup dan UI interactions
-├── style.css            # Styling untuk popup interface
-├── icons/               # Icon ekstensi (16x16, 48x48, 128x128)
-└── README.md           # Dokumentasi project
-```
-
-## 🚀 Cara Instalasi
-
-### Method 1: Install dari Chrome Web Store
-*[Coming Soon - Submit ke Chrome Web Store]*
-
-### Method 2: Install Manual (Developer Mode)
-
-1. **Download Source Code**
+1. **Clone repository:**
    ```bash
-   git clone https://github.com/username/fastfill-extension.git
+   git clone https://github.com/yourusername/fastfill-extension.git
    cd fastfill-extension
    ```
 
-2. **Buka Chrome Extensions**
+2. **Buka Chrome Extensions:**
    - Buka Chrome browser
-   - Navigate ke `chrome://extensions/`
+   - Navigasi ke `chrome://extensions/`
    - Aktifkan "Developer mode" (toggle di kanan atas)
 
-3. **Load Extension**
+3. **Load Extension:**
    - Klik "Load unpacked"
-   - Pilih folder `FastFill`
-   - Extension akan ter-install dan muncul di toolbar
+   - Pilih folder project FastFill
+   - Extension akan muncul di toolbar Chrome
 
-## 📖 Cara Penggunaan
+## 🚀 Cara Penggunaan
 
-### Langkah Dasar
-1. **Buka halaman web** yang memiliki form yang ingin diisi
+### Quick Start
+1. **Buka halaman dengan form** yang ingin diisi
 2. **Klik icon FastFill** di toolbar Chrome
-3. **Pilih template data** dari dropdown (QA Profile, User Profile, atau Dummy Data)
-4. **Klik "Deteksi Form"** untuk mencari form pada halaman
-5. **Klik "Isi Form"** untuk mengisi form secara otomatis
+3. **Pilih template** dari dropdown (QA Profile, User Profile, atau Dummy Profile)
+4. **Klik "Fill Form"** untuk mengisi form secara otomatis
+5. **Done!** Form akan terisi dengan data sesuai template
 
-### Penggunaan Advanced
-1. **Kelola Template**:
-   - Klik "Kelola Template" di popup
-   - Tambah template custom dengan data sesuai kebutuhan
-   - Export template untuk backup atau sharing
+### Fitur Advanced
 
-2. **Opsi Lanjutan**:
-   - Toggle highlight field yang diisi
-   - Kontrol pengisian checkbox dan radio button
-   - Customize behavior sesuai kebutuhan testing
+#### 🔍 Detect Forms
+- Gunakan tombol "Detect Forms" untuk melihat berapa banyak form element yang terdeteksi di halaman
+- Berguna untuk debugging dan validasi
 
-## 🔧 Template Data
+#### ⚙️ Pengaturan
+- **Auto-detect forms**: Otomatis inject script pada halaman baru
+- **Show notifications**: Tampilkan notifikasi sukses/error
+- **Fill Mode**: 
+  - Smart (Recommended): Filling cerdas berdasarkan field name/id
+  - Aggressive: Mengisi semua field yang ditemukan
+  - Conservative: Hanya mengisi field yang jelas teridentifikasi
 
-### Default Templates
+#### 📝 Template Management
+- **Add New Template**: Buat template custom dengan data JSON
+- **Edit Template**: Modifikasi template yang sudah ada
+- **Delete Template**: Hapus template (minimal 1 template harus ada)
+- **Export/Import**: Backup dan share template
 
-#### 1. Profil QA Tester
+## 📊 Template Structure
+
+Template menggunakan format JSON dengan struktur berikut:
+
 ```json
 {
-  "name": "Profil QA Tester",
+  "name": "Template Name",
   "data": {
-    "firstName": "Ahmad",
-    "lastName": "Tester", 
-    "fullName": "Ahmad Tester",
-    "email": "ahmad.tester@qa.com",
-    "phone": "081234567890",
-    "birthDate": "1990-05-15",
-    "age": "33",
-    "address": "Jl. Testing No. 123",
-    "city": "Jakarta",
-    "country": "Indonesia",
-    "company": "QA Testing Corp",
-    "jobTitle": "Senior QA Engineer"
-  }
-}
-```
-
-#### 2. Profil User Normal
-```json
-{
-  "name": "Profil User Normal", 
-  "data": {
-    "firstName": "Budi",
-    "lastName": "Santoso",
-    "fullName": "Budi Santoso",
-    "email": "budi.santoso@gmail.com",
-    "phone": "087654321098",
-    "company": "PT. Teknologi Maju",
-    "jobTitle": "Software Developer"
-  }
-}
-```
-
-#### 3. Profil Dummy Data
-```json
-{
-  "name": "Profil Dummy Data",
-  "data": {
+    "name": "John Doe",
     "firstName": "John",
-    "lastName": "Doe", 
-    "fullName": "John Doe",
-    "email": "john.doe@example.com",
-    "phone": "555-0123",
-    "city": "New York",
-    "country": "United States"
+    "lastName": "Doe",
+    "email": "john@example.com",
+    "phone": "081234567890",
+    "address": "Jl. Contoh No. 123",
+    "city": "Jakarta",
+    "zipCode": "12345",
+    "age": "25",
+    "birthDate": "1999-01-15",
+    "company": "Tech Corp",
+    "jobTitle": "Software Engineer",
+    "website": "https://example.com",
+    "description": "Professional description here",
+    "gender": "male",
+    "country": "Indonesia",
+    "password": "SecurePass123!",
+    "default": "Default value for unrecognized fields"
   }
 }
 ```
 
-## 🛠️ Development
+## 🎯 Field Mapping
 
-### Prerequisites
-- Chrome Browser (versi 88+)
-- Text Editor (VS Code recommended)
-- Basic knowledge of JavaScript, HTML, CSS
+Extension secara otomatis memetakan field berdasarkan:
+
+| Field Type | Mapping Keywords | Example |
+|------------|------------------|---------|
+| Name | name, nama, full_name | `name`, `full_name`, `user_name` |
+| Email | email, mail, e-mail | `email`, `user_email`, `contact_email` |
+| Phone | phone, tel, mobile, hp | `phone`, `mobile`, `phone_number` |
+| Address | address, alamat | `address`, `street_address`, `home_address` |
+| Birth Date | birth, lahir, date | `birth_date`, `date_of_birth`, `birthday` |
+| Company | company, perusahaan | `company`, `company_name`, `organization` |
+
+## 🔧 Development
+
+### Project Structure
+```
+FastFill/
+├── manifest.json          # Extension manifest
+├── background.js          # Service worker (Manifest V3)
+├── content.js             # Content script untuk DOM manipulation
+├── popup.html             # UI popup
+├── popup.js               # Logic popup
+├── style.css              # Styling untuk popup dan notifications
+├── test-form.html         # File testing untuk development
+├── validate.js            # Validation utilities
+├── icons/                 # Extension icons
+│   ├── icon16.png
+│   └── README.md
+├── API.md                 # API documentation
+├── INSTALL.md             # Installation guide
+├── README.md              # This file
+└── package.json           # Node.js dependencies (optional)
+```
 
 ### Development Setup
-1. Clone repository
-2. Buka folder di text editor
-3. Load extension dalam Developer Mode
-4. Edit files dan reload extension untuk testing
 
-### File Structure Explanation
+1. **Clone & Setup:**
+   ```bash
+   git clone https://github.com/yourusername/fastfill-extension.git
+   cd fastfill-extension
+   npm install  # Optional, untuk development tools
+   ```
 
-#### `manifest.json`
-- Configuration file untuk Chrome Extension
-- Mendefinisikan permissions, content scripts, dan metadata
-- Menggunakan Manifest V3 (latest standard)
+2. **Testing:**
+   - Buka `test-form.html` di browser untuk testing
+   - Load extension di Chrome dengan Developer Mode
+   - Test pada berbagai website dengan form
 
-#### `content.js`
-- Script yang diinjeksi ke halaman web
-- Bertugas mendeteksi dan mengisi form elements
-- Komunikasi dengan popup melalui Chrome messaging API
+3. **Building:**
+   ```bash
+   npm run build    # Optional build script
+   npm run validate # Validate extension files
+   ```
 
-#### `background.js` 
-- Service worker untuk background tasks
-- Handle instalasi extension dan default templates
-- Bridge komunikasi antara popup dan content script
+## 🧪 Testing
 
-#### `popup.html` & `popup.js`
-- User interface untuk extension
-- Template selection dan form filling controls
-- Template management dan settings
+### Manual Testing
+1. **Load extension** di Chrome Developer Mode
+2. **Buka test-form.html** atau website dengan form
+3. **Test semua fitur:**
+   - Template selection
+   - Form filling
+   - Form detection
+   - Settings
+   - Template management
 
-#### `style.css`
-- Modern, responsive styling untuk popup
-- Gradient backgrounds dan smooth animations
-- Mobile-friendly design
-
-## 🎨 UI/UX Features
-
-### Modern Interface
-- **Gradient Background**: Eye-catching purple gradient
-- **Card-based Layout**: Clean, organized sections
-- **Smooth Animations**: Hover effects dan transitions
-- **Responsive Design**: Works on different screen sizes
-
-### User Experience
-- **Real-time Status**: Connection dan form detection status
-- **Visual Feedback**: Success/error messages dengan animations
-- **Intuitive Controls**: Clear labels dan helpful tooltips
-- **Accessibility**: Keyboard navigation dan screen reader support
-
-## 🔒 Security & Permissions
-
-### Required Permissions
-- `activeTab`: Akses tab aktif untuk form detection
-- `storage`: Simpan template data di local storage
-- `scripting`: Inject content script untuk form manipulation
-
-### Host Permissions
-- `http://*/*` dan `https://*/*`: Akses semua website (required untuk form detection)
-
-### Privacy
-- **No Data Collection**: Extension tidak mengumpulkan data personal
-- **Local Storage Only**: Template data disimpan lokal di browser
-- **No External Requests**: Tidak ada komunikasi ke server external
-
-## 🧪 Testing Use Cases
-
-### QA Testing Scenarios
-1. **Form Validation Testing**
-   - Test required field validation
-   - Test field format validation (email, phone, etc.)
-   - Test character limits dan input restrictions
-
-2. **UI/UX Testing**
-   - Test form layout dengan data filled
-   - Test responsive design dengan different data lengths
-   - Test form submission workflows
-
-3. **Cross-browser Testing**
-   - Quick form filling across different environments
-   - Consistent test data untuk reproducible results
-
-### Development Scenarios
-1. **Frontend Development**
-   - Quick form population during development
-   - Test different data scenarios
-   - Demo preparation dengan realistic data
-
-2. **API Testing**
-   - Consistent payload generation
-   - Edge case testing dengan predefined data
-   - Integration testing dengan various data sets
-
-## 🔄 Changelog
-
-### Version 1.0.0 (Initial Release)
-- ✅ Form detection untuk standard HTML inputs
-- ✅ Three default templates (QA, User, Dummy)
-- ✅ Template management (add, edit, delete)
-- ✅ Export/Import functionality
-- ✅ Modern popup interface
-- ✅ Real-time form counting
-- ✅ Smart field mapping based on field names
-- ✅ Random selection untuk checkbox/radio
-
-### Planned Features (v1.1.0)
-- 🔄 Custom field mapping rules
-- 🔄 Form validation testing tools
-- 🔄 Batch processing multiple forms
-- 🔄 Integration dengan popular testing frameworks
-- 🔄 Advanced template editor dengan form builder
-- 🔄 Keyboard shortcuts
-- 🔄 Dark mode support
+### Automated Testing
+```bash
+npm test  # Run validation tests
+```
 
 ## 🤝 Contributing
 
-Kontribusi sangat welcome! Berikut cara berkontribusi:
+Kontribusi sangat welcome! Please follow these steps:
 
 1. **Fork repository**
-2. **Create feature branch** (`git checkout -b feature/AmazingFeature`)
-3. **Commit changes** (`git commit -m 'Add some AmazingFeature'`)
-4. **Push to branch** (`git push origin feature/AmazingFeature`)
+2. **Create feature branch:** `git checkout -b feature/amazing-feature`
+3. **Commit changes:** `git commit -m 'Add amazing feature'`
+4. **Push to branch:** `git push origin feature/amazing-feature`
 5. **Open Pull Request**
 
-### Development Guidelines
-- Follow JavaScript ES6+ standards
-- Maintain consistent code formatting
-- Add comments untuk complex logic
+### Contribution Guidelines
+- Follow existing code style
+- Add comments untuk code yang complex
 - Test thoroughly sebelum submit PR
 - Update documentation jika diperlukan
 
+## 📝 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
 ## 🐛 Bug Reports & Feature Requests
 
-### Reporting Bugs
-Gunakan GitHub Issues dengan template berikut:
-- **Browser Version**: Chrome version yang digunakan
-- **Extension Version**: FastFill version
-- **Steps to Reproduce**: Langkah-langkah reproduce bug
-- **Expected Behavior**: Behavior yang diharapkan  
-- **Actual Behavior**: Behavior yang terjadi
-- **Screenshots**: Jika applicable
+Gunakan [GitHub Issues](https://github.com/yourusername/fastfill-extension/issues) untuk:
+- 🐛 Report bugs
+- 💡 Request features
+- 📝 Suggest improvements
 
-### Feature Requests
-- Jelaskan use case dan problem yang ingin diselesaikan
-- Berikan contoh konkret penggunaan feature
-- Diskusikan alternative solutions yang sudah dicoba
+## 📞 Support
 
-## 📄 License
+- **Documentation:** [API.md](API.md) & [INSTALL.md](INSTALL.md)
+- **Issues:** [GitHub Issues](https://github.com/yourusername/fastfill-extension/issues)
+- **Email:** support@example.com
 
-Project ini dilisensikan under **MIT License** - lihat file [LICENSE](LICENSE) untuk details.
+## 🎯 Use Cases
 
-## 👨‍💻 Author
+### QA Testing
+- ✅ Rapid form testing dengan berbagai data set
+- ✅ Edge case testing dengan data boundary
+- ✅ Automation untuk regression testing
+- ✅ Cross-browser compatibility testing
 
-**Farel Rasyah**
-- GitHub:https://github.com/farelrasyah
-- Email: farelrasyah87@gmail.com
+### Development
+- ✅ Quick form population saat development
+- ✅ UI/UX testing dengan realistic data
+- ✅ Demo preparation dengan consistent data
+- ✅ Client presentation dengan professional data
 
+### General Productivity
+- ✅ Form filling untuk aplikasi berulang
+- ✅ Registration forms dengan data konsisten
+- ✅ Survey forms dengan template responses
 
-## 🙏 Acknowledgments
+## 🔄 Changelog
 
-- Terima kasih kepada Chrome Extensions API documentation
-- Inspiration dari berbagai form filler extensions yang ada
-- Community feedback dan suggestions untuk improvements
-- QA testing community yang memberikan input valuable
+### v1.0.0 (Initial Release)
+- ✅ Basic form detection dan filling
+- ✅ 3 default templates (QA, User, Dummy)
+- ✅ Modern popup UI dengan Material Design
+- ✅ Template management (CRUD operations)
+- ✅ Import/Export functionality
+- ✅ Advanced settings dan configurations
+- ✅ Notification system
+- ✅ Manifest V3 compliance
+
+## 🔮 Roadmap
+
+### v1.1.0 (Planned)
+- [ ] Advanced field mapping dengan AI/ML
+- [ ] Bulk template operations
+- [ ] Form validation integration
+- [ ] Custom CSS injection untuk better compatibility
+
+### v1.2.0 (Future)
+- [ ] Cloud sync untuk templates
+- [ ] Team collaboration features
+- [ ] Advanced analytics dan reporting
+- [ ] Integration dengan testing frameworks
+
+## 🏆 Credits
+
+Developed with ❤️ for QA engineers dan developers yang ingin membuat testing lebih efisien.
+
+**Author:** [Your Name](https://github.com/yourusername)
+**Created:** 2025
+**Last Updated:** June 2025
 
 ---
 
-## 📊 Stats & Info
+**⭐ Star this repo if it helps you!**
 
-![GitHub stars](https://img.shields.io/github/stars/farelrasyah/fastfill-extension?style=social)
-![GitHub forks](https://img.shields.io/github/forks/farelrasyah/fastfill-extension?style=social)
-![GitHub issues](https://img.shields.io/github/issues/farelrasyah/fastfill-extension)
-![GitHub pull requests](https://img.shields.io/github/issues-pr/farelrasyah/fastfill-extension)
-
-**Made with ❤️ for QA Testers and Developers**
-
----
-
-*Last updated: June 2025*
+Made with 💻 and ☕ for the testing community.

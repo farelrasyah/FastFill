@@ -1,567 +1,525 @@
+// Popup Script - FastFill Extension
+// Menangani UI popup dan komunikasi dengan background script
+
+console.log('FastFill popup script loaded');
+
+// DOM Elements
+let templateSelect, fillFormBtn, detectFormsBtn, statusMessage, formStats;
+let templatePreview, refreshTemplatesBtn;
+let autoDetectEnabled, showNotifications, fillMode;
+let addTemplateBtn, editTemplateBtn, deleteTemplateBtn, exportTemplatesBtn, importTemplatesBtn;
+let templateModal, modalClose, saveTemplateBtn, cancelTemplateBtn;
+let templateName, templateData;
+let fileInput;
+
+// Global state
+let currentTemplates = {};
+let currentSettings = {};
+let selectedTemplateId = '';
+
 /**
- * Popup Script - FastFill Extension
- * Menangani UI dan interaksi user di popup
+ * Initialize popup when DOM is loaded
  */
-
-class FastFillPopup {
-  constructor() {
-    this.templates = {};
-    this.selectedTemplate = null;
-    this.formsCount = 0;
-    this.initializePopup();
-  }
-
-  /**
-   * Inisialisasi popup
-   */
-  async initializePopup() {
-    console.log('FastFill Popup initialized');
-    
-    // Setup event listeners
-    this.setupEventListeners();
-    
-    // Load templates dan update UI
-    await this.loadTemplates();
-    await this.checkTabStatus();
-    
-    // Auto-detect forms saat popup dibuka
-    this.detectForms();
-  }
-
-  /**
-   * Setup event listeners untuk semua elemen UI
-   */
-  setupEventListeners() {
-    // Template selection
-    document.getElementById('templateSelect').addEventListener('change', (e) => {
-      this.onTemplateChange(e.target.value);
-    });
-
-    // Action buttons
-    document.getElementById('detectFormsBtn').addEventListener('click', () => {
-      this.detectForms();
-    });
-
-    document.getElementById('fillFormsBtn').addEventListener('click', () => {
-      this.fillForms();
-    });
-
-    // Advanced options toggle
-    document.getElementById('advancedToggle').addEventListener('click', () => {
-      this.toggleAdvancedOptions();
-    });
-
-    // Template management toggle
-    document.getElementById('manageTemplatesBtn').addEventListener('click', () => {
-      this.toggleTemplateManagement();
-    });
-
-    // Template management actions
-    document.getElementById('addTemplateBtn').addEventListener('click', () => {
-      this.showAddTemplateDialog();
-    });
-
-    document.getElementById('exportTemplatesBtn').addEventListener('click', () => {
-      this.exportTemplates();
-    });
-
-    document.getElementById('importTemplatesBtn').addEventListener('click', () => {
-      this.importTemplates();
-    });
-
-    // File input untuk import
-    document.getElementById('importFileInput').addEventListener('change', (e) => {
-      this.handleImportFile(e.target.files[0]);
-    });
-
-    // Footer buttons
-    document.getElementById('helpBtn').addEventListener('click', () => {
-      this.showHelp();
-    });
-
-    document.getElementById('aboutBtn').addEventListener('click', () => {
-      this.showAbout();
-    });
-  }
-
-  /**
-   * Load templates dari storage
-   */
-  async loadTemplates() {
+document.addEventListener('DOMContentLoaded', async () => {
     try {
-      const response = await this.sendMessage({ action: 'getTemplates' });
-      
-      if (response.success) {
-        this.templates = response.templates;
-        this.populateTemplateSelect();
-      } else {
-        this.showMessage('Error loading templates', 'error');
-      }
+        initializeElements();
+        setupEventListeners();
+        await loadTemplates();
+        await loadSettings();
+        updateUI();
+        console.log('Popup initialized successfully');
     } catch (error) {
-      console.error('FastFill: Error loading templates:', error);
-      this.showMessage('Gagal memuat template', 'error');
+        console.error('Error initializing popup:', error);
+        showStatus('Error initializing popup', 'error');
     }
-  }
+});
 
-  /**
-   * Populate template select dropdown
-   */
-  populateTemplateSelect() {
-    const select = document.getElementById('templateSelect');
-    select.innerHTML = '<option value="">Pilih template...</option>';
-
-    Object.keys(this.templates).forEach(templateId => {
-      const template = this.templates[templateId];
-      const option = document.createElement('option');
-      option.value = templateId;
-      option.textContent = template.name;
-      select.appendChild(option);
-    });
-  }
-
-  /**
-   * Handle perubahan template selection
-   */
-  onTemplateChange(templateId) {
-    if (templateId) {
-      this.selectedTemplate = this.templates[templateId];
-      this.updateTemplateInfo(this.selectedTemplate);
-      this.updateFillButton();
-    } else {
-      this.selectedTemplate = null;
-      this.hideTemplateInfo();
-      this.updateFillButton();
-    }
-  }
-
-  /**
-   * Update template information display
-   */
-  updateTemplateInfo(template) {
-    const infoDiv = document.getElementById('templateInfo');
-    const descriptionP = document.getElementById('templateDescription');
+/**
+ * Initialize DOM element references
+ */
+function initializeElements() {
+    // Main elements
+    templateSelect = document.getElementById('templateSelect');
+    fillFormBtn = document.getElementById('fillFormBtn');
+    detectFormsBtn = document.getElementById('detectFormsBtn');
+    statusMessage = document.getElementById('statusMessage');
+    formStats = document.getElementById('formStats');
+    templatePreview = document.getElementById('templatePreview');
+    refreshTemplatesBtn = document.getElementById('refreshTemplates');
     
-    descriptionP.textContent = template.description;
-    infoDiv.style.display = 'block';
-  }
+    // Settings elements
+    autoDetectEnabled = document.getElementById('autoDetectEnabled');
+    showNotifications = document.getElementById('showNotifications');
+    fillMode = document.getElementById('fillMode');
+    
+    // Template management elements
+    addTemplateBtn = document.getElementById('addTemplateBtn');
+    editTemplateBtn = document.getElementById('editTemplateBtn');
+    deleteTemplateBtn = document.getElementById('deleteTemplateBtn');
+    exportTemplatesBtn = document.getElementById('exportTemplatesBtn');
+    importTemplatesBtn = document.getElementById('importTemplatesBtn');
+    
+    // Modal elements
+    templateModal = document.getElementById('templateModal');
+    modalClose = document.getElementById('modalClose');
+    saveTemplateBtn = document.getElementById('saveTemplateBtn');
+    cancelTemplateBtn = document.getElementById('cancelTemplateBtn');
+    templateName = document.getElementById('templateName');
+    templateData = document.getElementById('templateData');
+    
+    // File input
+    fileInput = document.getElementById('fileInput');
+}
 
-  /**
-   * Hide template information
-   */
-  hideTemplateInfo() {
-    document.getElementById('templateInfo').style.display = 'none';
-  }
-
-  /**
-   * Check status tab aktif
-   */
-  async checkTabStatus() {
-    try {
-      const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
-      const tab = tabs[0];
-      
-      if (tab && (tab.url.startsWith('http://') || tab.url.startsWith('https://'))) {
-        this.updateStatus('Terhubung', 'connected');
-      } else {
-        this.updateStatus('Tidak dapat terhubung', 'disconnected');
-        this.showMessage('Ekstensi hanya bekerja pada halaman web (http/https)', 'warning');
-      }
-    } catch (error) {
-      this.updateStatus('Error', 'error');
-      console.error('FastFill: Error checking tab status:', error);
-    }
-  }
-
-  /**
-   * Update status connection
-   */
-  updateStatus(status, type) {
-    const statusElement = document.getElementById('connectionStatus');
-    statusElement.textContent = status;
-    statusElement.className = `status-value ${type}`;
-  }
-
-  /**
-   * Deteksi form pada halaman aktif
-   */
-  async detectForms() {
-    try {
-      this.showMessage('Mendeteksi form...', 'info');
-      
-      const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
-      const tab = tabs[0];
-
-      if (!tab || (!tab.url.startsWith('http://') && !tab.url.startsWith('https://'))) {
-        this.showMessage('Halaman tidak didukung', 'error');
-        return;
-      }
-
-      // Inject content script jika belum ada
-      await chrome.scripting.executeScript({
-        target: { tabId: tab.id },
-        files: ['content.js']
-      });
-
-      // Kirim pesan untuk deteksi form
-      const response = await chrome.tabs.sendMessage(tab.id, { action: 'detectForms' });
-      
-      if (response && response.success) {
-        this.formsCount = response.formsCount;
-        this.updateFormsCount(this.formsCount);
-        
-        if (this.formsCount > 0) {
-          this.showMessage(`Berhasil mendeteksi ${this.formsCount} form field`, 'success');
-        } else {
-          this.showMessage('Tidak ada form yang ditemukan', 'warning');
+/**
+ * Setup event listeners
+ */
+function setupEventListeners() {
+    // Main actions
+    templateSelect.addEventListener('change', onTemplateSelectionChange);
+    fillFormBtn.addEventListener('click', onFillFormClick);
+    detectFormsBtn.addEventListener('click', onDetectFormsClick);
+    refreshTemplatesBtn.addEventListener('click', onRefreshTemplatesClick);
+    
+    // Settings
+    autoDetectEnabled.addEventListener('change', onSettingsChange);
+    showNotifications.addEventListener('change', onSettingsChange);
+    fillMode.addEventListener('change', onSettingsChange);
+    
+    // Template management
+    addTemplateBtn.addEventListener('click', onAddTemplateClick);
+    editTemplateBtn.addEventListener('click', onEditTemplateClick);
+    deleteTemplateBtn.addEventListener('click', onDeleteTemplateClick);
+    exportTemplatesBtn.addEventListener('click', onExportTemplatesClick);
+    importTemplatesBtn.addEventListener('click', onImportTemplatesClick);
+    
+    // Modal
+    modalClose.addEventListener('click', closeModal);
+    saveTemplateBtn.addEventListener('click', onSaveTemplateClick);
+    cancelTemplateBtn.addEventListener('click', closeModal);
+    
+    // File input
+    fileInput.addEventListener('change', onFileInputChange);
+    
+    // Collapsible sections
+    setupCollapsibleSections();
+    
+    // Close modal when clicking outside
+    window.addEventListener('click', (event) => {
+        if (event.target === templateModal) {
+            closeModal();
         }
-      } else {
-        this.showMessage('Gagal mendeteksi form', 'error');
-      }
-
-      this.updateFillButton();
-    } catch (error) {
-      console.error('FastFill: Error detecting forms:', error);
-      this.showMessage('Error saat mendeteksi form', 'error');
-    }
-  }
-
-  /**
-   * Update forms count display
-   */
-  updateFormsCount(count) {
-    document.getElementById('formsCount').textContent = count;
-  }
-
-  /**
-   * Isi form dengan template yang dipilih
-   */
-  async fillForms() {
-    if (!this.selectedTemplate) {
-      this.showMessage('Pilih template terlebih dahulu', 'warning');
-      return;
-    }
-
-    if (this.formsCount === 0) {
-      this.showMessage('Tidak ada form untuk diisi', 'warning');
-      return;
-    }
-
-    try {
-      this.showMessage('Mengisi form...', 'info');
-      
-      const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
-      const tab = tabs[0];
-
-      const response = await chrome.tabs.sendMessage(tab.id, {
-        action: 'fillForms',
-        template: this.selectedTemplate
-      });
-
-      if (response && response.success) {
-        this.showMessage(`Form berhasil diisi dengan template "${this.selectedTemplate.name}"`, 'success');
-      } else {
-        this.showMessage('Gagal mengisi form', 'error');
-      }
-    } catch (error) {
-      console.error('FastFill: Error filling forms:', error);
-      this.showMessage('Error saat mengisi form', 'error');
-    }
-  }
-
-  /**
-   * Update status tombol Fill Forms
-   */
-  updateFillButton() {
-    const fillBtn = document.getElementById('fillFormsBtn');
-    const canFill = this.selectedTemplate && this.formsCount > 0;
-    
-    fillBtn.disabled = !canFill;
-    fillBtn.textContent = canFill ? '✏️ Isi Form' : '✏️ Isi Form (Tidak tersedia)';
-  }
-
-  /**
-   * Toggle advanced options panel
-   */
-  toggleAdvancedOptions() {
-    const panel = document.getElementById('advancedOptions');
-    const isVisible = panel.style.display !== 'none';
-    panel.style.display = isVisible ? 'none' : 'block';
-    
-    const toggleBtn = document.getElementById('advancedToggle');
-    toggleBtn.textContent = isVisible ? '⚙️ Opsi Lanjutan' : '⚙️ Sembunyikan Opsi';
-  }
-
-  /**
-   * Toggle template management panel
-   */
-  toggleTemplateManagement() {
-    const panel = document.getElementById('templateManagement');
-    const isVisible = panel.style.display !== 'none';
-    panel.style.display = isVisible ? 'none' : 'block';
-    
-    const toggleBtn = document.getElementById('manageTemplatesBtn');
-    toggleBtn.textContent = isVisible ? '📝 Kelola Template' : '📝 Sembunyikan Panel';
-    
-    if (!isVisible) {
-      this.populateTemplateList();
-    }
-  }
-
-  /**
-   * Populate template list untuk management
-   */
-  populateTemplateList() {
-    const listContainer = document.getElementById('templateList');
-    listContainer.innerHTML = '';
-
-    Object.keys(this.templates).forEach(templateId => {
-      const template = this.templates[templateId];
-      const templateItem = document.createElement('div');
-      templateItem.className = 'template-item';
-      
-      templateItem.innerHTML = `
-        <div class="template-item-info">
-          <strong>${template.name}</strong>
-          <small>${template.description}</small>
-        </div>
-        <div class="template-item-actions">
-          <button class="btn btn-small" onclick="fastFillPopup.editTemplate('${templateId}')">Edit</button>
-          <button class="btn btn-small btn-danger" onclick="fastFillPopup.deleteTemplate('${templateId}')">Hapus</button>
-        </div>
-      `;
-      
-      listContainer.appendChild(templateItem);
     });
-  }
+}
 
-  /**
-   * Show add template dialog
-   */
-  showAddTemplateDialog() {
-    const name = prompt('Nama template:');
-    if (!name) return;
+/**
+ * Setup collapsible sections
+ */
+function setupCollapsibleSections() {
+    const collapsibleHeaders = document.querySelectorAll('.collapsible-header');
     
-    const description = prompt('Deskripsi template:');
-    if (!description) return;
+    collapsibleHeaders.forEach(header => {
+        header.addEventListener('click', () => {
+            const content = header.nextElementSibling;
+            const icon = header.querySelector('.toggle-icon');
+            
+            if (content.style.display === 'block') {
+                content.style.display = 'none';
+                icon.textContent = '▼';
+            } else {
+                content.style.display = 'block';
+                icon.textContent = '▲';
+            }
+        });
+    });
+}
+
+/**
+ * Load templates from background script
+ */
+async function loadTemplates() {
+    try {
+        const response = await sendMessageToBackground({ action: 'getTemplates' });
+        
+        if (response.success) {
+            currentTemplates = response.templates;
+            populateTemplateSelect();
+            console.log('Templates loaded:', currentTemplates);
+        } else {
+            throw new Error(response.error || 'Failed to load templates');
+        }
+    } catch (error) {
+        console.error('Error loading templates:', error);
+        showStatus('Error loading templates', 'error');
+    }
+}
+
+/**
+ * Load settings from background script
+ */
+async function loadSettings() {
+    try {
+        const response = await sendMessageToBackground({ action: 'getSettings' });
+        
+        if (response.success) {
+            currentSettings = response.settings;
+            applySettings();
+            console.log('Settings loaded:', currentSettings);
+        } else {
+            throw new Error(response.error || 'Failed to load settings');
+        }
+    } catch (error) {
+        console.error('Error loading settings:', error);
+        showStatus('Error loading settings', 'error');
+    }
+}
+
+/**
+ * Populate template select dropdown
+ */
+function populateTemplateSelect() {
+    templateSelect.innerHTML = '<option value="">Select a template...</option>';
     
-    // Untuk simplicity, kita buat template dengan data default
-    // Di implementasi yang lebih advanced, bisa buat form builder
-    const newTemplate = {
-      id: Date.now().toString(),
-      name: name,
-      description: description,
-      data: {
-        firstName: 'Nama',
-        lastName: 'Belakang',
-        fullName: 'Nama Lengkap',
-        email: 'email@example.com',
-        phone: '081234567890',
-        birthDate: '1990-01-01',
-        age: '30',
-        address: 'Alamat Lengkap',
-        city: 'Kota',
-        country: 'Indonesia',
-        company: 'Nama Perusahaan',
-        jobTitle: 'Jabatan',
-        salary: '5000000',
-        password: 'Password123!',
-        fullAddress: 'Alamat lengkap dengan detail',
-        description: 'Deskripsi atau bio',
-        comment: 'Komentar atau catatan'
-      }
+    Object.keys(currentTemplates).forEach(templateId => {
+        const template = currentTemplates[templateId];
+        const option = document.createElement('option');
+        option.value = templateId;
+        option.textContent = template.name || templateId;
+        templateSelect.appendChild(option);
+    });
+}
+
+/**
+ * Apply loaded settings to UI
+ */
+function applySettings() {
+    autoDetectEnabled.checked = currentSettings.autoDetect || false;
+    showNotifications.checked = currentSettings.showNotifications !== false;
+    fillMode.value = currentSettings.fillMode || 'smart';
+}
+
+/**
+ * Update UI state
+ */
+function updateUI() {
+    const hasTemplate = selectedTemplateId && currentTemplates[selectedTemplateId];
+    
+    fillFormBtn.disabled = !hasTemplate;
+    editTemplateBtn.disabled = !hasTemplate;
+    deleteTemplateBtn.disabled = !hasTemplate || Object.keys(currentTemplates).length <= 1;
+    
+    updateTemplatePreview();
+}
+
+/**
+ * Update template preview
+ */
+function updateTemplatePreview() {
+    if (!selectedTemplateId || !currentTemplates[selectedTemplateId]) {
+        templatePreview.innerHTML = '<p class="preview-placeholder">Select a template to see preview</p>';
+        return;
+    }
+    
+    const template = currentTemplates[selectedTemplateId];
+    const data = template.data || {};
+    
+    let previewHTML = `<div class="template-info">
+        <h4>${template.name}</h4>
+        <div class="template-fields">`;
+    
+    const importantFields = ['name', 'email', 'phone', 'address', 'company'];
+    
+    importantFields.forEach(field => {
+        if (data[field]) {
+            previewHTML += `<div class="field-preview">
+                <span class="field-label">${field}:</span>
+                <span class="field-value">${data[field]}</span>
+            </div>`;
+        }
+    });
+    
+    previewHTML += `</div></div>`;
+    templatePreview.innerHTML = previewHTML;
+}
+
+/**
+ * Event handlers
+ */
+async function onTemplateSelectionChange() {
+    selectedTemplateId = templateSelect.value;
+    updateUI();
+}
+
+async function onFillFormClick() {
+    if (!selectedTemplateId || !currentTemplates[selectedTemplateId]) {
+        showStatus('Please select a template first', 'error');
+        return;
+    }
+    
+    try {
+        showStatus('Filling form...', 'loading');
+        fillFormBtn.disabled = true;
+        
+        const response = await sendMessageToBackground({
+            action: 'fillFormOnCurrentTab',
+            templateData: currentTemplates[selectedTemplateId]
+        });
+        
+        if (response.success) {
+            showStatus('Form filled successfully!', 'success');
+        } else {
+            throw new Error(response.error || 'Failed to fill form');
+        }
+    } catch (error) {
+        console.error('Error filling form:', error);
+        showStatus('Error filling form: ' + error.message, 'error');
+    } finally {
+        fillFormBtn.disabled = false;
+    }
+}
+
+async function onDetectFormsClick() {
+    try {
+        showStatus('Detecting forms...', 'loading');
+        detectFormsBtn.disabled = true;
+        
+        const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+        const response = await chrome.tabs.sendMessage(tab.id, { action: 'detectForms' });
+        
+        if (response.success) {
+            const count = response.count || 0;
+            showStatus(`Found ${count} form elements`, 'success');
+            formStats.innerHTML = `<div class="stats-info">📊 ${count} form fields detected</div>`;
+        } else {
+            throw new Error(response.message || 'Failed to detect forms');
+        }
+    } catch (error) {
+        console.error('Error detecting forms:', error);
+        showStatus('Error detecting forms. Make sure you\'re on a valid webpage.', 'error');
+        formStats.innerHTML = '';
+    } finally {
+        detectFormsBtn.disabled = false;
+    }
+}
+
+async function onRefreshTemplatesClick() {
+    await loadTemplates();
+    showStatus('Templates refreshed', 'success');
+}
+
+async function onSettingsChange() {
+    const newSettings = {
+        autoDetect: autoDetectEnabled.checked,
+        showNotifications: showNotifications.checked,
+        fillMode: fillMode.value
     };
     
-    this.saveTemplate(newTemplate);
-  }
-
-  /**
-   * Save template
-   */
-  async saveTemplate(template) {
     try {
-      const response = await this.sendMessage({
-        action: 'saveTemplate',
-        template: template
-      });
-      
-      if (response.success) {
-        this.showMessage('Template berhasil disimpan', 'success');
-        await this.loadTemplates();
-        this.populateTemplateList();
-      } else {
-        this.showMessage('Gagal menyimpan template', 'error');
-      }
+        const response = await sendMessageToBackground({
+            action: 'updateSettings',
+            settings: newSettings
+        });
+        
+        if (response.success) {
+            currentSettings = { ...currentSettings, ...newSettings };
+            showStatus('Settings saved', 'success');
+        } else {
+            throw new Error(response.error || 'Failed to save settings');
+        }
     } catch (error) {
-      console.error('FastFill: Error saving template:', error);
-      this.showMessage('Error menyimpan template', 'error');
+        console.error('Error saving settings:', error);
+        showStatus('Error saving settings', 'error');
     }
-  }
+}
 
-  /**
-   * Delete template
-   */
-  async deleteTemplate(templateId) {
-    if (!confirm('Yakin ingin menghapus template ini?')) {
-      return;
+function onAddTemplateClick() {
+    openModal('Add New Template', '', {});
+}
+
+function onEditTemplateClick() {
+    if (!selectedTemplateId || !currentTemplates[selectedTemplateId]) {
+        showStatus('Please select a template to edit', 'error');
+        return;
+    }
+    
+    const template = currentTemplates[selectedTemplateId];
+    openModal('Edit Template', template.name, template.data);
+}
+
+async function onDeleteTemplateClick() {
+    if (!selectedTemplateId || !currentTemplates[selectedTemplateId]) {
+        showStatus('Please select a template to delete', 'error');
+        return;
+    }
+    
+    if (Object.keys(currentTemplates).length <= 1) {
+        showStatus('Cannot delete the last template', 'error');
+        return;
+    }
+    
+    if (!confirm('Are you sure you want to delete this template?')) {
+        return;
     }
     
     try {
-      const response = await this.sendMessage({
-        action: 'deleteTemplate',
-        templateId: templateId
-      });
-      
-      if (response.success) {
-        this.showMessage('Template berhasil dihapus', 'success');
-        await this.loadTemplates();
-        this.populateTemplateList();
-      } else {
-        this.showMessage('Gagal menghapus template', 'error');
-      }
+        const response = await sendMessageToBackground({
+            action: 'deleteTemplate',
+            templateId: selectedTemplateId
+        });
+        
+        if (response.success) {
+            await loadTemplates();
+            selectedTemplateId = '';
+            templateSelect.value = '';
+            updateUI();
+            showStatus('Template deleted successfully', 'success');
+        } else {
+            throw new Error(response.error || 'Failed to delete template');
+        }
     } catch (error) {
-      console.error('FastFill: Error deleting template:', error);
-      this.showMessage('Error menghapus template', 'error');
+        console.error('Error deleting template:', error);
+        showStatus('Error deleting template', 'error');
     }
-  }
+}
 
-  /**
-   * Export templates
-   */
-  exportTemplates() {
-    const dataStr = JSON.stringify(this.templates, null, 2);
-    const dataBlob = new Blob([dataStr], { type: 'application/json' });
-    
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(dataBlob);
-    link.download = 'fastfill-templates.json';
-    link.click();
-    
-    this.showMessage('Template berhasil diekspor', 'success');
-  }
+function onExportTemplatesClick() {
+    try {
+        const exportData = {
+            templates: currentTemplates,
+            exportDate: new Date().toISOString(),
+            version: '1.0.0'
+        };
+        
+        const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `fastfill-templates-${new Date().toISOString().split('T')[0]}.json`;
+        a.click();
+        
+        URL.revokeObjectURL(url);
+        showStatus('Templates exported successfully', 'success');
+    } catch (error) {
+        console.error('Error exporting templates:', error);
+        showStatus('Error exporting templates', 'error');
+    }
+}
 
-  /**
-   * Import templates
-   */
-  importTemplates() {
-    document.getElementById('importFileInput').click();
-  }
+function onImportTemplatesClick() {
+    fileInput.click();
+}
 
-  /**
-   * Handle import file
-   */
-  async handleImportFile(file) {
+async function onFileInputChange(event) {
+    const file = event.target.files[0];
     if (!file) return;
     
     try {
-      const text = await file.text();
-      const importedTemplates = JSON.parse(text);
-      
-      // Merge dengan template yang ada
-      Object.assign(this.templates, importedTemplates);
-      
-      // Save to storage
-      const response = await this.sendMessage({
-        action: 'saveTemplate',
-        template: this.templates
-      });
-      
-      if (response.success) {
-        this.showMessage('Template berhasil diimpor', 'success');
-        await this.loadTemplates();
-        this.populateTemplateList();
-      }
+        const text = await file.text();
+        const importData = JSON.parse(text);
+        
+        if (!importData.templates) {
+            throw new Error('Invalid template file format');
+        }
+        
+        // Merge with existing templates
+        const mergedTemplates = { ...currentTemplates, ...importData.templates };
+        
+        // Save merged templates
+        await chrome.storage.local.set({ templates: mergedTemplates });
+        await loadTemplates();
+        
+        showStatus('Templates imported successfully', 'success');
     } catch (error) {
-      console.error('FastFill: Error importing templates:', error);
-      this.showMessage('Gagal mengimpor template', 'error');
+        console.error('Error importing templates:', error);
+        showStatus('Error importing templates: ' + error.message, 'error');
     }
-  }
-
-  /**
-   * Show help dialog
-   */
-  showHelp() {
-    const helpText = `
-FastFill - Auto Form Filler
-
-Cara Penggunaan:
-1. Buka halaman web yang memiliki form
-2. Klik ekstensi FastFill
-3. Pilih template data yang diinginkan
-4. Klik "Deteksi Form" untuk mencari form
-5. Klik "Isi Form" untuk mengisi form otomatis
-
-Fitur:
-- Deteksi otomatis berbagai jenis input
-- Template data yang dapat dikustomisasi
-- Dukungan untuk checkbox dan radio button
-- Export/Import template data
-
-Tips:
-- Pastikan halaman sudah selesai dimuat
-- Beberapa form mungkin memerlukan validasi manual
-- Gunakan template yang sesuai dengan jenis form
-    `;
     
-    alert(helpText);
-  }
-
-  /**
-   * Show about dialog
-   */
-  showAbout() {
-    const aboutText = `
-FastFill v1.0.0
-Auto Form Filler untuk Testing QA & Development
-
-Dibuat untuk membantu QA tester dan developer dalam mengisi form secara otomatis untuk keperluan testing UI/UX.
-
-Fitur utama:
-- Deteksi form otomatis
-- Multiple template data
-- Support berbagai jenis input
-- Template management
-- Export/Import data
-
-© 2025 FastFill Extension
-    `;
-    
-    alert(aboutText);
-  }
-
-  /**
-   * Show message notification
-   */
-  showMessage(message, type = 'info') {
-    const container = document.getElementById('messageContainer');
-    
-    const messageDiv = document.createElement('div');
-    messageDiv.className = `message message-${type}`;
-    messageDiv.textContent = message;
-    
-    container.appendChild(messageDiv);
-    
-    // Auto remove after 3 seconds
-    setTimeout(() => {
-      if (messageDiv.parentNode) {
-        messageDiv.parentNode.removeChild(messageDiv);
-      }
-    }, 3000);
-  }
-
-  /**
-   * Send message to background script
-   */
-  async sendMessage(message) {
-    return new Promise((resolve) => {
-      chrome.runtime.sendMessage(message, resolve);
-    });
-  }
+    // Clear file input
+    fileInput.value = '';
 }
 
-// Global instance
-let fastFillPopup;
+async function onSaveTemplateClick() {
+    const name = templateName.value.trim();
+    const dataText = templateData.value.trim();
+    
+    if (!name) {
+        showStatus('Please enter a template name', 'error');
+        return;
+    }
+    
+    let parsedData;
+    try {
+        parsedData = JSON.parse(dataText);
+    } catch (error) {
+        showStatus('Invalid JSON format in template data', 'error');
+        return;
+    }
+    
+    const templateId = name.toLowerCase().replace(/\s+/g, '_');
+    const templateObj = {
+        name: name,
+        data: parsedData
+    };
+    
+    try {
+        const response = await sendMessageToBackground({
+            action: 'saveTemplate',
+            templateId: templateId,
+            templateData: templateObj
+        });
+        
+        if (response.success) {
+            await loadTemplates();
+            selectedTemplateId = templateId;
+            templateSelect.value = templateId;
+            updateUI();
+            closeModal();
+            showStatus('Template saved successfully', 'success');
+        } else {
+            throw new Error(response.error || 'Failed to save template');
+        }
+    } catch (error) {
+        console.error('Error saving template:', error);
+        showStatus('Error saving template', 'error');
+    }
+}
 
-// Initialize popup when DOM is loaded
-document.addEventListener('DOMContentLoaded', () => {
-  fastFillPopup = new FastFillPopup();
-});
+/**
+ * Modal functions
+ */
+function openModal(title, name = '', data = {}) {
+    document.getElementById('modalTitle').textContent = title;
+    templateName.value = name;
+    templateData.value = JSON.stringify(data, null, 2);
+    templateModal.style.display = 'block';
+}
+
+function closeModal() {
+    templateModal.style.display = 'none';
+    templateName.value = '';
+    templateData.value = '';
+}
+
+/**
+ * Utility functions
+ */
+function showStatus(message, type = 'info') {
+    statusMessage.textContent = message;
+    statusMessage.className = `status-message ${type}`;
+    
+    if (type === 'success' || type === 'error') {
+        setTimeout(() => {
+            statusMessage.textContent = '';
+            statusMessage.className = 'status-message';
+        }, 3000);
+    }
+}
+
+function sendMessageToBackground(message) {
+    return new Promise((resolve) => {
+        chrome.runtime.sendMessage(message, resolve);
+    });
+}
+
+console.log('FastFill popup script initialized');

@@ -1,132 +1,185 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>FastFill - Auto Form Filler</title>
-  <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FastFill - Auto Form Filler</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <!-- Header -->
-  <div class="header">
-    <div class="logo">
-      <h2>🚀 FastFill</h2>
-      <span class="subtitle">Auto Form Filler</span>
+    <!-- Header Section -->
+    <div class="header">
+        <div class="logo">
+            <img src="icons/icon16.png" alt="FastFill" class="logo-icon">
+            <h1>FastFill</h1>
+        </div>
+        <div class="version">v1.0.0</div>
     </div>
-  </div>
 
-  <!-- Status Section -->
-  <div class="status-section">
-    <div class="status-item">
-      <span class="status-label">Status:</span>
-      <span id="connectionStatus" class="status-value">Mendeteksi...</span>
-    </div>
-    <div class="status-item">
-      <span class="status-label">Form Terdeteksi:</span>
-      <span id="formsCount" class="status-value">0</span>
-    </div>
-  </div>
+    <!-- Main Content -->
+    <div class="container">
+        <!-- Template Selection Section -->
+        <div class="section">
+            <h3>Select Template</h3>
+            <div class="template-selector">
+                <select id="templateSelect" class="form-select">
+                    <option value="">Loading templates...</option>
+                </select>
+                <button id="refreshTemplates" class="btn-icon" title="Refresh Templates">
+                    <span>🔄</span>
+                </button>
+            </div>
+        </div>
 
-  <!-- Template Selection -->
-  <div class="section">
-    <label for="templateSelect" class="section-title">Pilih Template Data:</label>
-    <select id="templateSelect" class="template-select">
-      <option value="">Memuat template...</option>
-    </select>
-    
-    <div id="templateInfo" class="template-info" style="display: none;">
-      <p id="templateDescription"></p>
-    </div>
-  </div>
+        <!-- Template Preview Section -->
+        <div class="section">
+            <h3>Template Preview</h3>
+            <div id="templatePreview" class="template-preview">
+                <p class="preview-placeholder">Select a template to see preview</p>
+            </div>
+        </div>
 
-  <!-- Action Buttons -->
-  <div class="section">
-    <div class="button-group">
-      <button id="detectFormsBtn" class="btn btn-secondary">
-        🔍 Deteksi Form
-      </button>
-      <button id="fillFormsBtn" class="btn btn-primary" disabled>
-        ✏️ Isi Form
-      </button>
-    </div>
-  </div>
+        <!-- Action Buttons -->
+        <div class="section">
+            <div class="button-group">
+                <button id="fillFormBtn" class="btn btn-primary" disabled>
+                    <span class="btn-icon">📝</span>
+                    Fill Form
+                </button>
+                <button id="detectFormsBtn" class="btn btn-secondary">
+                    <span class="btn-icon">🔍</span>
+                    Detect Forms
+                </button>
+            </div>
+        </div>
 
-  <!-- Advanced Options -->
-  <div class="section">
-    <div class="advanced-toggle">
-      <button id="advancedToggle" class="btn btn-link">
-        ⚙️ Opsi Lanjutan
-      </button>
-    </div>
-    
-    <div id="advancedOptions" class="advanced-options" style="display: none;">
-      <div class="option-group">
-        <label class="checkbox-container">
-          <input type="checkbox" id="highlightFields" checked>
-          <span class="checkmark"></span>
-          Highlight field yang diisi
-        </label>
-        
-        <label class="checkbox-container">
-          <input type="checkbox" id="fillCheckboxes" checked>
-          <span class="checkmark"></span>
-          Isi checkbox secara random
-        </label>
-        
-        <label class="checkbox-container">
-          <input type="checkbox" id="fillRadios" checked>
-          <span class="checkmark"></span>
-          Pilih radio button secara random
-        </label>
-      </div>
-    </div>
-  </div>
+        <!-- Status Section -->
+        <div class="section">
+            <div id="statusMessage" class="status-message"></div>
+            <div id="formStats" class="form-stats"></div>
+        </div>
 
-  <!-- Template Management -->
-  <div class="section">
-    <div class="template-management">
-      <button id="manageTemplatesBtn" class="btn btn-link">
-        📝 Kelola Template
-      </button>
-    </div>
-    
-    <div id="templateManagement" class="template-mgmt-panel" style="display: none;">
-      <h4>Kelola Template Data</h4>
-      
-      <div class="template-list" id="templateList">
-        <!-- Template list akan diisi oleh JavaScript -->
-      </div>
-      
-      <div class="template-actions">
-        <button id="addTemplateBtn" class="btn btn-small">+ Tambah Template</button>
-        <button id="exportTemplatesBtn" class="btn btn-small">📤 Export</button>
-        <button id="importTemplatesBtn" class="btn btn-small">📥 Import</button>
-      </div>
-    </div>
-  </div>
+        <!-- Advanced Options (Collapsible) -->
+        <div class="section">
+            <div class="collapsible">
+                <button class="collapsible-header" id="advancedToggle">
+                    <span>Advanced Options</span>
+                    <span class="toggle-icon">▼</span>
+                </button>
+                <div class="collapsible-content" id="advancedContent">
+                    <div class="option-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="autoDetectEnabled">
+                            <span class="checkmark"></span>
+                            Auto-detect forms on page load
+                        </label>
+                    </div>
+                    <div class="option-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="showNotifications">
+                            <span class="checkmark"></span>
+                            Show notifications
+                        </label>
+                    </div>
+                    <div class="option-group">
+                        <label for="fillMode">Fill Mode:</label>
+                        <select id="fillMode" class="form-select">
+                            <option value="smart">Smart (Recommended)</option>
+                            <option value="aggressive">Aggressive</option>
+                            <option value="conservative">Conservative</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-  <!-- Messages/Notifications -->
-  <div id="messageContainer" class="message-container">
-    <!-- Pesan akan ditampilkan di sini -->
-  </div>
+        <!-- Template Management -->
+        <div class="section">
+            <div class="collapsible">
+                <button class="collapsible-header" id="templateToggle">
+                    <span>Template Management</span>
+                    <span class="toggle-icon">▼</span>
+                </button>
+                <div class="collapsible-content" id="templateContent">
+                    <div class="button-group-vertical">
+                        <button id="addTemplateBtn" class="btn btn-outline">
+                            <span class="btn-icon">➕</span>
+                            Add New Template
+                        </button>
+                        <button id="editTemplateBtn" class="btn btn-outline" disabled>
+                            <span class="btn-icon">✏️</span>
+                            Edit Selected Template
+                        </button>
+                        <button id="deleteTemplateBtn" class="btn btn-outline btn-danger" disabled>
+                            <span class="btn-icon">🗑️</span>
+                            Delete Template
+                        </button>
+                        <button id="exportTemplatesBtn" class="btn btn-outline">
+                            <span class="btn-icon">📤</span>
+                            Export Templates
+                        </button>
+                        <button id="importTemplatesBtn" class="btn btn-outline">
+                            <span class="btn-icon">📥</span>
+                            Import Templates
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-  <!-- Footer -->
-  <div class="footer">
-    <div class="footer-info">
-      <span>v1.0.0</span>
-      <span>•</span>
-      <span>Untuk Testing QA & Development</span>
+        <!-- Help Section -->
+        <div class="section">
+            <div class="help-section">
+                <h4>Quick Help</h4>
+                <ul class="help-list">
+                    <li>Select a template and click "Fill Form" to auto-fill detected forms</li>
+                    <li>Use "Detect Forms" to see how many forms are on the current page</li>
+                    <li>Customize templates in Template Management section</li>
+                    <li>Enable auto-detect to automatically inject the script on new pages</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <div class="footer-links">
+                <a href="#" id="helpLink">Help</a>
+                <a href="#" id="aboutLink">About</a>
+                <a href="https://github.com" target="_blank" id="githubLink">GitHub</a>
+            </div>
+            <div class="footer-text">
+                Made for QA Testing & Development
+            </div>
+        </div>
     </div>
-    <div class="footer-links">
-      <button id="helpBtn" class="btn btn-link">Bantuan</button>
-      <button id="aboutBtn" class="btn btn-link">Tentang</button>
+
+    <!-- Hidden file input for template import -->
+    <input type="file" id="fileInput" accept=".json" style="display: none;">
+
+    <!-- Modal for template editing (hidden by default) -->
+    <div id="templateModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">Edit Template</h3>
+                <button class="modal-close" id="modalClose">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="templateName">Template Name:</label>
+                    <input type="text" id="templateName" class="form-input" placeholder="Enter template name">
+                </div>
+                <div class="form-group">
+                    <label for="templateData">Template Data (JSON):</label>
+                    <textarea id="templateData" class="form-textarea" rows="10" placeholder="Enter template data as JSON"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="saveTemplateBtn" class="btn btn-primary">Save Template</button>
+                <button id="cancelTemplateBtn" class="btn btn-secondary">Cancel</button>
+            </div>
+        </div>
     </div>
-  </div>
 
-  <!-- Hidden file input for import -->
-  <input type="file" id="importFileInput" accept=".json" style="display: none;">
-
-  <!-- JavaScript -->
-  <script src="popup.js"></script>
+    <script src="popup.js"></script>
 </body>
 </html>

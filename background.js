@@ -1,220 +1,331 @@
+// Background Script - FastFill Extension
+// Service Worker untuk Manifest V3
+// Menangani komunikasi antar komponen dan storage management
+
+console.log('FastFill background script loaded');
+
 /**
- * Background Script - FastFill Extension
- * Menangani komunikasi antar komponen dan instalasi ekstensi
+ * Default template data untuk form filling
  */
+const DEFAULT_TEMPLATES = {
+    qa_profile: {
+        name: 'QA Testing Profile',
+        data: {
+            name: 'John Doe QA',
+            firstName: 'John',
+            lastName: 'Doe',
+            email: 'qa.tester@example.com',
+            phone: '081234567890',
+            address: 'Jl. Testing QA No. 123',
+            city: 'Jakarta',
+            zipCode: '12345',
+            age: '25',
+            birthDate: '1999-01-15',
+            company: 'QA Testing Corp',
+            jobTitle: 'Quality Assurance Engineer',
+            website: 'https://qa-testing.com',
+            description: 'Experienced QA engineer specializing in automated testing and quality assurance processes.',
+            gender: 'male',
+            country: 'Indonesia',
+            password: 'TestingQA123!',
+            default: 'QA Test Data'
+        }
+    },
+    user_profile: {
+        name: 'Regular User Profile',
+        data: {
+            name: 'Jane Smith',
+            firstName: 'Jane',
+            lastName: 'Smith',
+            email: 'jane.smith@email.com',
+            phone: '081987654321',
+            address: 'Jl. User Friendly No. 456',
+            city: 'Bandung',
+            zipCode: '54321',
+            age: '28',
+            birthDate: '1996-05-20',
+            company: 'Tech Solutions Inc',
+            jobTitle: 'Software Developer',
+            website: 'https://janesmith.dev',
+            description: 'Passionate software developer with expertise in web technologies and user experience design.',
+            gender: 'female',
+            country: 'Indonesia',
+            password: 'UserPass456!',
+            default: 'User Test Data'
+        }
+    },
+    dummy_profile: {
+        name: 'Dummy Test Profile',
+        data: {
+            name: 'Test Dummy',
+            firstName: 'Test',
+            lastName: 'Dummy',
+            email: 'dummy.test@placeholder.com',
+            phone: '08111111111',
+            address: 'Jl. Dummy Test No. 999',
+            city: 'Surabaya',
+            zipCode: '99999',
+            age: '30',
+            birthDate: '1994-12-31',
+            company: 'Dummy Corp',
+            jobTitle: 'Test Specialist',
+            website: 'https://dummy-test.com',
+            description: 'This is a dummy profile used for testing purposes only. All data is fictional.',
+            gender: 'other',
+            country: 'Indonesia',
+            password: 'DummyTest789!',
+            default: 'Dummy Data'
+        }
+    }
+};
 
-class FastFillBackground {
-  constructor() {
-    this.initializeBackground();
-  }
-
-  /**
-   * Inisialisasi background script
-   */
-  initializeBackground() {
-    console.log('FastFill Background Script loaded');
-
-    // Event listener untuk instalasi ekstensi
-    chrome.runtime.onInstalled.addListener((details) => {
-      this.handleInstallation(details);
-    });
-
-    // Event listener untuk pesan dari popup dan content script
-    chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-      this.handleMessage(request, sender, sendResponse);
-    });
-  }
-
-  /**
-   * Menangani instalasi ekstensi
-   */
-  handleInstallation(details) {
+/**
+ * Installation handler - Setup default templates
+ */
+chrome.runtime.onInstalled.addListener((details) => {
+    console.log('FastFill extension installed/updated:', details);
+    
     if (details.reason === 'install') {
-      console.log('FastFill: Extension installed');
-      this.initializeDefaultTemplates();
-    } else if (details.reason === 'update') {
-      console.log('FastFill: Extension updated');
+        // Set default templates on first install
+        setupDefaultTemplates();
+        console.log('Default templates initialized');
     }
-  }
+});
 
-  /**
-   * Inisialisasi template default saat pertama kali install
-   */
-  async initializeDefaultTemplates() {
+/**
+ * Setup default templates dalam storage
+ */
+async function setupDefaultTemplates() {
     try {
-      const defaultTemplates = this.getDefaultTemplates();
-      
-      await chrome.storage.local.set({
-        fastFillTemplates: defaultTemplates,
-        selectedTemplate: 'qa_profile'
-      });
-      
-      console.log('FastFill: Default templates initialized');
-    } catch (error) {
-      console.error('FastFill: Error initializing templates:', error);
-    }
-  }
-
-  /**
-   * Mendapatkan template default
-   */
-  getDefaultTemplates() {
-    return {
-      qa_profile: {
-        name: 'Profil QA Tester',
-        description: 'Data untuk testing QA',
-        data: {
-          firstName: 'Ahmad',
-          lastName: 'Tester',
-          fullName: 'Ahmad Tester',
-          email: 'ahmad.tester@qa.com',
-          phone: '081234567890',
-          birthDate: '1990-05-15',
-          age: '33',
-          address: 'Jl. Testing No. 123',
-          city: 'Jakarta',
-          country: 'Indonesia',
-          company: 'QA Testing Corp',
-          jobTitle: 'Senior QA Engineer',
-          salary: '8000000',
-          password: 'TestPass123!',
-          fullAddress: 'Jl. Testing No. 123, RT/RW 01/02, Kelurahan Testing, Kecamatan QA, Jakarta Selatan 12345',
-          description: 'Ini adalah deskripsi untuk keperluan testing QA. Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-          comment: 'Komentar testing untuk form validasi dan fungsionalitas aplikasi.'
-        }
-      },
-      user_profile: {
-        name: 'Profil User Normal',
-        description: 'Data user biasa',
-        data: {
-          firstName: 'Budi',
-          lastName: 'Santoso',
-          fullName: 'Budi Santoso',
-          email: 'budi.santoso@gmail.com',
-          phone: '087654321098',
-          birthDate: '1985-12-20',
-          age: '38',
-          address: 'Jl. Mawar No. 45',
-          city: 'Bandung',
-          country: 'Indonesia',
-          company: 'PT. Teknologi Maju',
-          jobTitle: 'Software Developer',
-          salary: '12000000',
-          password: 'UserPass456!',
-          fullAddress: 'Jl. Mawar No. 45, RT/RW 03/04, Kelurahan Sukajadi, Kecamatan Coblong, Bandung 40132',
-          description: 'Seorang developer yang berpengalaman dalam mengembangkan aplikasi web dan mobile.',
-          comment: 'Tertarik dengan teknologi terbaru dan selalu ingin belajar hal baru.'
-        }
-      },
-      dummy_profile: {
-        name: 'Profil Dummy Data',
-        description: 'Data dummy untuk testing',
-        data: {
-          firstName: 'John',
-          lastName: 'Doe',
-          fullName: 'John Doe',
-          email: 'john.doe@example.com',
-          phone: '555-0123',
-          birthDate: '1995-01-01',
-          age: '29',
-          address: '123 Main Street',
-          city: 'New York',
-          country: 'United States',
-          company: 'Example Corp',
-          jobTitle: 'Test Manager',
-          salary: '75000',
-          password: 'DummyPass789!',
-          fullAddress: '123 Main Street, Apt 4B, Manhattan, New York, NY 10001, United States',
-          description: 'This is a dummy profile created for testing purposes. All information is fictional.',
-          comment: 'This is a sample comment for testing form submissions and validations.'
-        }
-      }
-    };
-  }
-
-  /**
-   * Menangani pesan dari popup dan content script
-   */
-  handleMessage(request, sender, sendResponse) {
-    switch (request.action) {
-      case 'getTemplates':
-        this.getStoredTemplates().then(templates => {
-          sendResponse({ success: true, templates: templates });
+        await chrome.storage.local.set({
+            templates: DEFAULT_TEMPLATES,
+            selectedTemplate: 'qa_profile',
+            settings: {
+                autoDetect: true,
+                showNotifications: true,
+                fillMode: 'smart' // smart, aggressive, conservative
+            }
         });
-        return true; // Keep message channel open for async response
-
-      case 'saveTemplate':
-        this.saveTemplate(request.template).then(() => {
-          sendResponse({ success: true });
-        }).catch(error => {
-          sendResponse({ success: false, error: error.message });
-        });
-        return true;
-
-      case 'deleteTemplate':
-        this.deleteTemplate(request.templateId).then(() => {
-          sendResponse({ success: true });
-        }).catch(error => {
-          sendResponse({ success: false, error: error.message });
-        });
-        return true;
-
-      default:
-        sendResponse({ success: false, error: 'Unknown action' });
-    }
-  }
-
-  /**
-   * Mendapatkan template yang disimpan
-   */
-  async getStoredTemplates() {
-    try {
-      const result = await chrome.storage.local.get(['fastFillTemplates']);
-      return result.fastFillTemplates || this.getDefaultTemplates();
+        console.log('Default templates saved to storage');
     } catch (error) {
-      console.error('FastFill: Error getting templates:', error);
-      return this.getDefaultTemplates();
+        console.error('Error setting up default templates:', error);
     }
-  }
-
-  /**
-   * Menyimpan template baru
-   */
-  async saveTemplate(template) {
-    try {
-      const templates = await this.getStoredTemplates();
-      templates[template.id] = template;
-      
-      await chrome.storage.local.set({
-        fastFillTemplates: templates
-      });
-      
-      console.log('FastFill: Template saved:', template.name);
-    } catch (error) {
-      console.error('FastFill: Error saving template:', error);
-      throw error;
-    }
-  }
-
-  /**
-   * Menghapus template
-   */
-  async deleteTemplate(templateId) {
-    try {
-      const templates = await this.getStoredTemplates();
-      delete templates[templateId];
-      
-      await chrome.storage.local.set({
-        fastFillTemplates: templates
-      });
-      
-      console.log('FastFill: Template deleted:', templateId);
-    } catch (error) {
-      console.error('FastFill: Error deleting template:', error);
-      throw error;
-    }
-  }
 }
 
-// Inisialisasi background script
-const fastFillBackground = new FastFillBackground();
+/**
+ * Get templates from storage
+ * @returns {Promise<Object>} Templates object
+ */
+async function getTemplates() {
+    try {
+        const result = await chrome.storage.local.get(['templates']);
+        return result.templates || DEFAULT_TEMPLATES;
+    } catch (error) {
+        console.error('Error getting templates:', error);
+        return DEFAULT_TEMPLATES;
+    }
+}
+
+/**
+ * Save template to storage
+ * @param {string} templateId - Template ID
+ * @param {Object} templateData - Template data
+ */
+async function saveTemplate(templateId, templateData) {
+    try {
+        const templates = await getTemplates();
+        templates[templateId] = templateData;
+        await chrome.storage.local.set({ templates });
+        console.log('Template saved:', templateId);
+    } catch (error) {
+        console.error('Error saving template:', error);
+        throw error;
+    }
+}
+
+/**
+ * Delete template from storage
+ * @param {string} templateId - Template ID to delete
+ */
+async function deleteTemplate(templateId) {
+    try {
+        const templates = await getTemplates();
+        delete templates[templateId];
+        await chrome.storage.local.set({ templates });
+        console.log('Template deleted:', templateId);
+    } catch (error) {
+        console.error('Error deleting template:', error);
+        throw error;
+    }
+}
+
+/**
+ * Get current settings
+ * @returns {Promise<Object>} Settings object
+ */
+async function getSettings() {
+    try {
+        const result = await chrome.storage.local.get(['settings']);
+        return result.settings || {
+            autoDetect: true,
+            showNotifications: true,
+            fillMode: 'smart'
+        };
+    } catch (error) {
+        console.error('Error getting settings:', error);
+        return {
+            autoDetect: true,
+            showNotifications: true,
+            fillMode: 'smart'
+        };
+    }
+}
+
+/**
+ * Update settings
+ * @param {Object} newSettings - New settings to save
+ */
+async function updateSettings(newSettings) {
+    try {
+        const currentSettings = await getSettings();
+        const updatedSettings = { ...currentSettings, ...newSettings };
+        await chrome.storage.local.set({ settings: updatedSettings });
+        console.log('Settings updated:', updatedSettings);
+    } catch (error) {
+        console.error('Error updating settings:', error);
+        throw error;
+    }
+}
+
+/**
+ * Message listener untuk komunikasi dengan content script dan popup
+ */
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+    console.log('Background received message:', request);
+    
+    // Handle different message types
+    switch (request.action) {
+        case 'getTemplates':
+            getTemplates()
+                .then(templates => sendResponse({ success: true, templates }))
+                .catch(error => sendResponse({ success: false, error: error.message }));
+            return true; // Indicates async response
+            
+        case 'saveTemplate':
+            saveTemplate(request.templateId, request.templateData)
+                .then(() => sendResponse({ success: true }))
+                .catch(error => sendResponse({ success: false, error: error.message }));
+            return true;
+            
+        case 'deleteTemplate':
+            deleteTemplate(request.templateId)
+                .then(() => sendResponse({ success: true }))
+                .catch(error => sendResponse({ success: false, error: error.message }));
+            return true;
+            
+        case 'getSettings':
+            getSettings()
+                .then(settings => sendResponse({ success: true, settings }))
+                .catch(error => sendResponse({ success: false, error: error.message }));
+            return true;
+            
+        case 'updateSettings':
+            updateSettings(request.settings)
+                .then(() => sendResponse({ success: true }))
+                .catch(error => sendResponse({ success: false, error: error.message }));
+            return true;
+            
+        case 'fillFormOnCurrentTab':
+            fillFormOnCurrentTab(request.templateData)
+                .then(result => sendResponse(result))
+                .catch(error => sendResponse({ success: false, error: error.message }));
+            return true;
+            
+        default:
+            console.warn('Unknown action:', request.action);
+            sendResponse({ success: false, error: 'Unknown action' });
+    }
+});
+
+/**
+ * Fill form pada tab yang aktif
+ * @param {Object} templateData - Template data untuk filling
+ */
+async function fillFormOnCurrentTab(templateData) {
+    try {
+        const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+        
+        if (!tab) {
+            throw new Error('No active tab found');
+        }
+        
+        // Inject content script jika belum ada
+        try {
+            await chrome.scripting.executeScript({
+                target: { tabId: tab.id },
+                files: ['content.js']
+            });
+        } catch (error) {
+            // Content script mungkin sudah ada, ignore error
+            console.log('Content script might already be injected');
+        }
+        
+        // Send message ke content script
+        const response = await chrome.tabs.sendMessage(tab.id, {
+            action: 'fillForm',
+            templateData: templateData
+        });
+        
+        return response;
+    } catch (error) {
+        console.error('Error filling form on current tab:', error);
+        throw error;
+    }
+}
+
+/**
+ * Check if content script is loaded on tab
+ * @param {number} tabId - Tab ID
+ * @returns {Promise<boolean>} True if content script is loaded
+ */
+async function isContentScriptLoaded(tabId) {
+    try {
+        const response = await chrome.tabs.sendMessage(tabId, { action: 'ping' });
+        return response && response.success;
+    } catch (error) {
+        return false;
+    }
+}
+
+/**
+ * Action button click handler
+ */
+chrome.action.onClicked.addListener(async (tab) => {
+    console.log('Extension icon clicked on tab:', tab.url);
+    // Popup akan handle ini, tapi kita bisa log untuk debugging
+});
+
+/**
+ * Tab update listener untuk auto-detect forms (jika enabled)
+ */
+chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
+    if (changeInfo.status === 'complete' && tab.url) {
+        const settings = await getSettings();
+        
+        if (settings.autoDetect) {
+            // Auto inject content script pada halaman baru
+            try {
+                await chrome.scripting.executeScript({
+                    target: { tabId: tabId },
+                    files: ['content.js']
+                });
+                console.log('Content script auto-injected on:', tab.url);
+            } catch (error) {
+                // Ignore errors (seperti chrome:// pages)
+                console.log('Could not inject content script on:', tab.url);
+            }
+        }
+    }
+});
+
+console.log('FastFill background script initialized');

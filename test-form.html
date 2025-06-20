@@ -1,364 +1,472 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>FastFill Test Form</title>
-  <style>
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      max-width: 800px;
-      margin: 0 auto;
-      padding: 20px;
-      background: #f5f5f5;
-    }
-    
-    .form-container {
-      background: white;
-      padding: 30px;
-      border-radius: 10px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-      margin-bottom: 20px;
-    }
-    
-    h1, h2 {
-      color: #333;
-      margin-bottom: 20px;
-    }
-    
-    .form-group {
-      margin-bottom: 15px;
-    }
-    
-    label {
-      display: block;
-      margin-bottom: 5px;
-      font-weight: 500;
-      color: #555;
-    }
-    
-    input, select, textarea {
-      width: 100%;
-      padding: 10px;
-      border: 2px solid #ddd;
-      border-radius: 5px;
-      font-size: 14px;
-      box-sizing: border-box;
-    }
-    
-    input:focus, select:focus, textarea:focus {
-      outline: none;
-      border-color: #4c51bf;
-    }
-    
-    .form-row {
-      display: flex;
-      gap: 15px;
-    }
-    
-    .form-row .form-group {
-      flex: 1;
-    }
-    
-    .checkbox-group, .radio-group {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-    
-    .checkbox-item, .radio-item {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    
-    .checkbox-item input, .radio-item input {
-      width: auto;
-    }
-    
-    button {
-      background: #4c51bf;
-      color: white;
-      padding: 12px 24px;
-      border: none;
-      border-radius: 5px;
-      font-size: 16px;
-      cursor: pointer;
-      margin-right: 10px;
-    }
-    
-    button:hover {
-      background: #434190;
-    }
-    
-    .section {
-      margin-bottom: 30px;
-      padding-bottom: 20px;
-      border-bottom: 1px solid #eee;
-    }
-    
-    .instructions {
-      background: #e6fffa;
-      padding: 15px;
-      border-radius: 5px;
-      border-left: 4px solid #38b2ac;
-      margin-bottom: 20px;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FastFill - Test Form Page</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        h2 {
+            color: #4285f4;
+            border-bottom: 2px solid #4285f4;
+            padding-bottom: 10px;
+            margin-top: 30px;
+        }
+        
+        .form-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            background-color: #fafafa;
+        }
+        
+        .form-row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .form-group {
+            flex: 1;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #333;
+        }
+        
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+        
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #4285f4;
+            box-shadow: 0 0 0 2px rgba(66, 133, 244, 0.1);
+        }
+        
+        textarea {
+            resize: vertical;
+            height: 80px;
+        }
+        
+        .checkbox-group, .radio-group {
+            margin: 10px 0;
+        }
+        
+        .checkbox-group label, .radio-group label {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+            font-weight: normal;
+        }
+        
+        .checkbox-group input, .radio-group input {
+            width: auto;
+            margin-right: 8px;
+        }
+        
+        .submit-btn {
+            background-color: #4285f4;
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+        
+        .submit-btn:hover {
+            background-color: #3367d6;
+        }
+        
+        .instructions {
+            background-color: #e8f5e8;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #34a853;
+        }
+        
+        .test-info {
+            background-color: #fff3cd;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #ffc107;
+        }
+    </style>
 </head>
 <body>
-  <div class="instructions">
-    <h3>🚀 FastFill Test Page</h3>
-    <p>Halaman ini dibuat untuk testing ekstensi FastFill. Gunakan langkah berikut:</p>
-    <ol>
-      <li>Install ekstensi FastFill di Chrome</li>
-      <li>Klik icon FastFill di toolbar</li>
-      <li>Pilih template data (QA Profile, User Profile, atau Dummy Data)</li>
-      <li>Klik "Deteksi Form" untuk mendeteksi form elements</li>
-      <li>Klik "Isi Form" untuk auto-fill semua fields</li>
-    </ol>
-  </div>
-
-  <!-- Personal Information Form -->
-  <div class="form-container">
-    <h2>📝 Form Informasi Personal</h2>
-    <form id="personalForm">
-      <div class="section">
-        <h3>Data Diri</h3>
-        <div class="form-row">
-          <div class="form-group">
-            <label for="firstName">Nama Depan *</label>
-            <input type="text" id="firstName" name="firstName" placeholder="Masukkan nama depan" required>
-          </div>
-          <div class="form-group">
-            <label for="lastName">Nama Belakang *</label>
-            <input type="text" id="lastName" name="lastName" placeholder="Masukkan nama belakang" required>
-          </div>
+    <div class="container">
+        <h1>🚀 FastFill Extension Test Page</h1>
+        
+        <div class="instructions">
+            <h3>📋 Testing Instructions:</h3>
+            <ol>
+                <li>Install the FastFill extension in Chrome</li>
+                <li>Open this page in Chrome</li>
+                <li>Click the FastFill icon in the toolbar</li>
+                <li>Select a template (QA Profile, User Profile, or Dummy Profile)</li>
+                <li>Click "Fill Form" and watch the magic happen! ✨</li>
+            </ol>
         </div>
         
-        <div class="form-group">
-          <label for="fullName">Nama Lengkap</label>
-          <input type="text" id="fullName" name="fullName" placeholder="Nama lengkap sesuai KTP">
+        <div class="test-info">
+            <strong>💡 Test Coverage:</strong> This page contains various form elements to test the extension's detection and filling capabilities including text inputs, emails, numbers, dates, selects, checkboxes, and radio buttons.
         </div>
+
+        <form id="testForm" action="#" method="post">
+            <!-- Personal Information Section -->
+            <div class="form-section">
+                <h2>👤 Personal Information</h2>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="fullName">Full Name *</label>
+                        <input type="text" id="fullName" name="name" placeholder="Enter your full name" required>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="firstName">First Name</label>
+                        <input type="text" id="firstName" name="firstName" placeholder="First name">
+                    </div>
+                    <div class="form-group">
+                        <label for="lastName">Last Name</label>
+                        <input type="text" id="lastName" name="lastName" placeholder="Last name">
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="email">Email Address *</label>
+                        <input type="email" id="email" name="email" placeholder="your.email@example.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="phone">Phone Number</label>
+                        <input type="tel" id="phone" name="phone" placeholder="081234567890">
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="age">Age</label>
+                        <input type="number" id="age" name="age" min="16" max="100" placeholder="25">
+                    </div>
+                    <div class="form-group">
+                        <label for="birthDate">Date of Birth</label>
+                        <input type="date" id="birthDate" name="birthDate">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Gender</label>
+                    <div class="radio-group">
+                        <label>
+                            <input type="radio" name="gender" value="male">
+                            Male
+                        </label>
+                        <label>
+                            <input type="radio" name="gender" value="female">
+                            Female
+                        </label>
+                        <label>
+                            <input type="radio" name="gender" value="other">
+                            Other
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contact Information Section -->
+            <div class="form-section">
+                <h2>📍 Contact Information</h2>
+                
+                <div class="form-group">
+                    <label for="address">Street Address</label>
+                    <input type="text" id="address" name="address" placeholder="123 Main Street">
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="city">City</label>
+                        <input type="text" id="city" name="city" placeholder="Jakarta">
+                    </div>
+                    <div class="form-group">
+                        <label for="zipCode">ZIP Code</label>
+                        <input type="text" id="zipCode" name="zipCode" placeholder="12345">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="country">Country</label>
+                    <select id="country" name="country">
+                        <option value="">Select Country</option>
+                        <option value="indonesia">Indonesia</option>
+                        <option value="malaysia">Malaysia</option>
+                        <option value="singapore">Singapore</option>
+                        <option value="thailand">Thailand</option>
+                        <option value="philippines">Philippines</option>
+                        <option value="vietnam">Vietnam</option>
+                        <option value="usa">United States</option>
+                        <option value="uk">United Kingdom</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Professional Information Section -->
+            <div class="form-section">
+                <h2>💼 Professional Information</h2>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="company">Company Name</label>
+                        <input type="text" id="company" name="company" placeholder="Your Company Inc.">
+                    </div>
+                    <div class="form-group">
+                        <label for="jobTitle">Job Title</label>
+                        <input type="text" id="jobTitle" name="jobTitle" placeholder="Software Engineer">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="website">Website</label>
+                    <input type="url" id="website" name="website" placeholder="https://yourwebsite.com">
+                </div>
+                
+                <div class="form-group">
+                    <label for="description">Professional Description</label>
+                    <textarea id="description" name="description" placeholder="Tell us about your professional background..."></textarea>
+                </div>
+            </div>
+
+            <!-- Account Information Section -->
+            <div class="form-section">
+                <h2>🔐 Account Information</h2>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="username">Username</label>
+                        <input type="text" id="username" name="username" placeholder="Choose a username">
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" name="password" placeholder="Choose a secure password">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Preferences Section -->
+            <div class="form-section">
+                <h2>⚙️ Preferences</h2>
+                
+                <div class="form-group">
+                    <label for="language">Preferred Language</label>
+                    <select id="language" name="language">
+                        <option value="">Select Language</option>
+                        <option value="en">English</option>
+                        <option value="id">Bahasa Indonesia</option>
+                        <option value="ms">Bahasa Malaysia</option>
+                        <option value="th">ไทย (Thai)</option>
+                        <option value="vi">Tiếng Việt (Vietnamese)</option>
+                        <option value="zh">中文 (Chinese)</option>
+                    </select>
+                </div>
+                
+                <div class="checkbox-group">
+                    <label>Notification Preferences:</label>
+                    <label>
+                        <input type="checkbox" name="notifications[]" value="email">
+                        Email notifications
+                    </label>
+                    <label>
+                        <input type="checkbox" name="notifications[]" value="sms">
+                        SMS notifications
+                    </label>
+                    <label>
+                        <input type="checkbox" name="notifications[]" value="push">
+                        Push notifications
+                    </label>
+                </div>
+                
+                <div class="checkbox-group">
+                    <label>
+                        <input type="checkbox" name="newsletter" value="yes">
+                        Subscribe to newsletter
+                    </label>
+                    <label>
+                        <input type="checkbox" name="terms" value="yes" required>
+                        I agree to the Terms and Conditions *
+                    </label>
+                    <label>
+                        <input type="checkbox" name="privacy" value="yes">
+                        I accept the Privacy Policy
+                    </label>
+                </div>
+            </div>
+
+            <!-- Additional Testing Fields -->
+            <div class="form-section">
+                <h2>🧪 Additional Test Fields</h2>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="testText">Test Text Field</label>
+                        <input type="text" id="testText" name="testField" placeholder="Random text field">
+                    </div>
+                    <div class="form-group">
+                        <label for="testNumber">Test Number Field</label>
+                        <input type="number" id="testNumber" name="testNumber" placeholder="12345">
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="testSearch">Search Field</label>
+                        <input type="search" id="testSearch" name="testSearch" placeholder="Search term...">
+                    </div>
+                    <div class="form-group">
+                        <label for="testTime">Time Field</label>
+                        <input type="time" id="testTime" name="testTime">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="testColor">Color Picker</label>
+                    <input type="color" id="testColor" name="testColor" value="#4285f4">
+                </div>
+                
+                <div class="form-group">
+                    <label for="testRange">Range Slider</label>
+                    <input type="range" id="testRange" name="testRange" min="0" max="100" value="50">
+                </div>
+            </div>
+
+            <!-- Submit Section -->
+            <div class="form-section">
+                <button type="submit" class="submit-btn">🚀 Submit Test Form</button>
+                <button type="reset" class="submit-btn" style="background-color: #6c757d; margin-left: 10px;">🔄 Reset Form</button>
+            </div>
+        </form>
         
-        <div class="form-row">
-          <div class="form-group">
-            <label for="email">Email *</label>
-            <input type="email" id="email" name="email" placeholder="contoh@email.com" required>
-          </div>
-          <div class="form-group">
-            <label for="phone">Nomor Telepon</label>
-            <input type="tel" id="phone" name="phone" placeholder="081234567890">
-          </div>
+        <div class="test-info">
+            <h3>🔍 What This Tests:</h3>
+            <ul>
+                <li><strong>Text Inputs:</strong> name, firstName, lastName, address, city, company, jobTitle, username</li>
+                <li><strong>Email Input:</strong> email field validation</li>
+                <li><strong>Phone Input:</strong> tel type field</li>
+                <li><strong>Number Inputs:</strong> age, testNumber fields</li>
+                <li><strong>Date Input:</strong> birthDate field</li>
+                <li><strong>Select Dropdowns:</strong> country, language selection</li>
+                <li><strong>Radio Buttons:</strong> gender selection</li>
+                <li><strong>Checkboxes:</strong> notifications, terms, newsletter</li>
+                <li><strong>Textarea:</strong> description field</li>
+                <li><strong>URL Input:</strong> website field</li>
+                <li><strong>Password Input:</strong> password field</li>
+                <li><strong>Special Inputs:</strong> search, time, color, range</li>
+            </ul>
         </div>
+    </div>
+
+    <script>
+        // Simple form validation and testing utilities
+        document.getElementById('testForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Show success message
+            alert('🎉 Form submitted successfully! This is just a test - no data was actually sent.');
+            
+            // Log form data for debugging
+            const formData = new FormData(this);
+            console.log('Form Data:', Object.fromEntries(formData));
+        });
         
-        <div class="form-row">
-          <div class="form-group">
-            <label for="birthDate">Tanggal Lahir</label>
-            <input type="date" id="birthDate" name="birthDate">
-          </div>
-          <div class="form-group">
-            <label for="age">Umur</label>
-            <input type="number" id="age" name="age" min="1" max="120" placeholder="25">
-          </div>
-        </div>
-      </div>
-
-      <div class="section">
-        <h3>Alamat</h3>
-        <div class="form-group">
-          <label for="address">Alamat Lengkap</label>
-          <textarea id="address" name="address" rows="3" placeholder="Jl. Nama Jalan No. XX, RT/RW"></textarea>
-        </div>
+        // Add some debugging utilities for FastFill testing
+        window.FastFillTest = {
+            // Get all form elements
+            getFormElements: function() {
+                const inputs = document.querySelectorAll('input, select, textarea');
+                return Array.from(inputs).map(el => ({
+                    tag: el.tagName,
+                    type: el.type,
+                    name: el.name,
+                    id: el.id,
+                    placeholder: el.placeholder
+                }));
+            },
+            
+            // Clear all form fields
+            clearForm: function() {
+                document.getElementById('testForm').reset();
+                console.log('Form cleared');
+            },
+            
+            // Fill form with test data manually
+            fillTestData: function() {
+                const testData = {
+                    name: 'Test User',
+                    firstName: 'Test',
+                    lastName: 'User',
+                    email: 'test@example.com',
+                    phone: '081234567890',
+                    age: '25',
+                    address: 'Test Address 123',
+                    city: 'Test City',
+                    zipCode: '12345',
+                    company: 'Test Company',
+                    jobTitle: 'Test Engineer'
+                };
+                
+                Object.keys(testData).forEach(key => {
+                    const field = document.querySelector(`[name="${key}"]`);
+                    if (field) {
+                        field.value = testData[key];
+                    }
+                });
+                
+                console.log('Test data filled');
+            }
+        };
         
-        <div class="form-row">
-          <div class="form-group">
-            <label for="city">Kota</label>
-            <input type="text" id="city" name="city" placeholder="Jakarta">
-          </div>
-          <div class="form-group">
-            <label for="country">Negara</label>
-            <select id="country" name="country">
-              <option value="">Pilih negara</option>
-              <option value="Indonesia">Indonesia</option>
-              <option value="Malaysia">Malaysia</option>
-              <option value="Singapore">Singapore</option>
-              <option value="Thailand">Thailand</option>
-              <option value="USA">United States</option>
-              <option value="UK">United Kingdom</option>
-            </select>
-          </div>
-        </div>
-      </div>
-
-      <div class="section">
-        <h3>Informasi Pekerjaan</h3>
-        <div class="form-row">
-          <div class="form-group">
-            <label for="company">Nama Perusahaan</label>
-            <input type="text" id="company" name="company" placeholder="PT. Nama Perusahaan">
-          </div>
-          <div class="form-group">
-            <label for="jobTitle">Jabatan</label>
-            <input type="text" id="jobTitle" name="jobTitle" placeholder="Software Engineer">
-          </div>
-        </div>
-        
-        <div class="form-group">
-          <label for="salary">Gaji (per bulan)</label>
-          <input type="number" id="salary" name="salary" placeholder="5000000">
-        </div>
-        
-        <div class="form-group">
-          <label for="workDescription">Deskripsi Pekerjaan</label>
-          <textarea id="workDescription" name="workDescription" rows="4" placeholder="Deskripsikan pekerjaan dan tanggung jawab Anda"></textarea>
-        </div>
-      </div>
-
-      <div class="section">
-        <h3>Preferensi</h3>
-        <div class="form-group">
-          <label>Hobi (pilih yang sesuai)</label>
-          <div class="checkbox-group">
-            <div class="checkbox-item">
-              <input type="checkbox" id="hobby1" name="hobbies" value="reading">
-              <label for="hobby1">Membaca</label>
-            </div>
-            <div class="checkbox-item">
-              <input type="checkbox" id="hobby2" name="hobbies" value="sports">
-              <label for="hobby2">Olahraga</label>
-            </div>
-            <div class="checkbox-item">
-              <input type="checkbox" id="hobby3" name="hobbies" value="music">
-              <label for="hobby3">Musik</label>
-            </div>
-            <div class="checkbox-item">
-              <input type="checkbox" id="hobby4" name="hobbies" value="travel">
-              <label for="hobby4">Traveling</label>
-            </div>
-            <div class="checkbox-item">
-              <input type="checkbox" id="hobby5" name="hobbies" value="gaming">
-              <label for="hobby5">Gaming</label>
-            </div>
-          </div>
-        </div>
-        
-        <div class="form-group">
-          <label>Tingkat Pendidikan</label>
-          <div class="radio-group">
-            <div class="radio-item">
-              <input type="radio" id="edu1" name="education" value="sma">
-              <label for="edu1">SMA/SMK</label>
-            </div>
-            <div class="radio-item">
-              <input type="radio" id="edu2" name="education" value="diploma">
-              <label for="edu2">Diploma</label>
-            </div>
-            <div class="radio-item">
-              <input type="radio" id="edu3" name="education" value="s1">
-              <label for="edu3">Sarjana (S1)</label>
-            </div>
-            <div class="radio-item">
-              <input type="radio" id="edu4" name="education" value="s2">
-              <label for="edu4">Magister (S2)</label>
-            </div>
-            <div class="radio-item">
-              <input type="radio" id="edu5" name="education" value="s3">
-              <label for="edu5">Doktor (S3)</label>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="section">
-        <h3>Security</h3>
-        <div class="form-group">
-          <label for="password">Password</label>
-          <input type="password" id="password" name="password" placeholder="Masukkan password">
-        </div>
-        
-        <div class="form-group">
-          <label for="website">Website/Portfolio</label>
-          <input type="url" id="website" name="website" placeholder="https://www.example.com">
-        </div>
-      </div>
-
-      <div class="section">
-        <h3>Komentar</h3>
-        <div class="form-group">
-          <label for="comments">Catatan Tambahan</label>
-          <textarea id="comments" name="comments" rows="4" placeholder="Tuliskan komentar atau catatan tambahan di sini..."></textarea>
-        </div>
-      </div>
-
-      <button type="submit">Submit Form</button>
-      <button type="reset">Reset Form</button>
-    </form>
-  </div>
-
-  <!-- Additional Test Forms -->
-  <div class="form-container">
-    <h2>🔍 Quick Test Form</h2>
-    <form id="quickForm">
-      <div class="form-row">
-        <div class="form-group">
-          <label for="testName">Nama</label>
-          <input type="text" id="testName" name="testName" placeholder="Nama lengkap">
-        </div>
-        <div class="form-group">
-          <label for="testEmail">Email</label>
-          <input type="email" id="testEmail" name="testEmail" placeholder="email@example.com">
-        </div>
-      </div>
-      
-      <div class="form-row">
-        <div class="form-group">
-          <label for="testPhone">Telepon</label>
-          <input type="tel" id="testPhone" name="testPhone" placeholder="081234567890">
-        </div>
-        <div class="form-group">
-          <label for="testAge">Umur</label>
-          <input type="number" id="testAge" name="testAge" placeholder="25">
-        </div>
-      </div>
-      
-      <div class="form-group">
-        <label for="testMessage">Pesan</label>
-        <textarea id="testMessage" name="testMessage" rows="3" placeholder="Tulis pesan Anda di sini..."></textarea>
-      </div>
-      
-      <button type="submit">Kirim</button>
-    </form>
-  </div>
-
-  <script>
-    // Simple form validation
-    document.getElementById('personalForm').addEventListener('submit', function(e) {
-      e.preventDefault();
-      alert('Form berhasil disubmit! (Demo - data tidak dikirim ke server)');
-    });
-
-    document.getElementById('quickForm').addEventListener('submit', function(e) {
-      e.preventDefault();
-      alert('Quick form berhasil disubmit!');
-    });
-
-    // Auto-fill detection indicator
-    let formFields = document.querySelectorAll('input, select, textarea');
-    console.log(`FastFill Test: Found ${formFields.length} form fields`);
-    
-    // Add visual indicator when fields are filled
-    formFields.forEach(field => {
-      field.addEventListener('input', function() {
-        if (this.value) {
-          this.style.borderColor = '#38a169';
-          this.style.backgroundColor = '#f0fff4';
-        } else {
-          this.style.borderColor = '#ddd';
-          this.style.backgroundColor = 'white';
-        }
-      });
-    });
-  </script>
+        // Log test utilities to console
+        console.log('FastFill Test Utilities loaded. Use:');
+        console.log('- FastFillTest.getFormElements() - Get all form elements');
+        console.log('- FastFillTest.clearForm() - Clear all form fields');
+        console.log('- FastFillTest.fillTestData() - Fill with test data');
+    </script>
 </body>
 </html>
