@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FastFill - Auto Form Filler</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Header -->
+  <div class="header">
+    <div class="logo">
+      <h2>🚀 FastFill</h2>
+      <span class="subtitle">Auto Form Filler</span>
+    </div>
+  </div>
+
+  <!-- Status Section -->
+  <div class="status-section">
+    <div class="status-item">
+      <span class="status-label">Status:</span>
+      <span id="connectionStatus" class="status-value">Mendeteksi...</span>
+    </div>
+    <div class="status-item">
+      <span class="status-label">Form Terdeteksi:</span>
+      <span id="formsCount" class="status-value">0</span>
+    </div>
+  </div>
+
+  <!-- Template Selection -->
+  <div class="section">
+    <label for="templateSelect" class="section-title">Pilih Template Data:</label>
+    <select id="templateSelect" class="template-select">
+      <option value="">Memuat template...</option>
+    </select>
+    
+    <div id="templateInfo" class="template-info" style="display: none;">
+      <p id="templateDescription"></p>
+    </div>
+  </div>
+
+  <!-- Action Buttons -->
+  <div class="section">
+    <div class="button-group">
+      <button id="detectFormsBtn" class="btn btn-secondary">
+        🔍 Deteksi Form
+      </button>
+      <button id="fillFormsBtn" class="btn btn-primary" disabled>
+        ✏️ Isi Form
+      </button>
+    </div>
+  </div>
+
+  <!-- Advanced Options -->
+  <div class="section">
+    <div class="advanced-toggle">
+      <button id="advancedToggle" class="btn btn-link">
+        ⚙️ Opsi Lanjutan
+      </button>
+    </div>
+    
+    <div id="advancedOptions" class="advanced-options" style="display: none;">
+      <div class="option-group">
+        <label class="checkbox-container">
+          <input type="checkbox" id="highlightFields" checked>
+          <span class="checkmark"></span>
+          Highlight field yang diisi
+        </label>
+        
+        <label class="checkbox-container">
+          <input type="checkbox" id="fillCheckboxes" checked>
+          <span class="checkmark"></span>
+          Isi checkbox secara random
+        </label>
+        
+        <label class="checkbox-container">
+          <input type="checkbox" id="fillRadios" checked>
+          <span class="checkmark"></span>
+          Pilih radio button secara random
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <!-- Template Management -->
+  <div class="section">
+    <div class="template-management">
+      <button id="manageTemplatesBtn" class="btn btn-link">
+        📝 Kelola Template
+      </button>
+    </div>
+    
+    <div id="templateManagement" class="template-mgmt-panel" style="display: none;">
+      <h4>Kelola Template Data</h4>
+      
+      <div class="template-list" id="templateList">
+        <!-- Template list akan diisi oleh JavaScript -->
+      </div>
+      
+      <div class="template-actions">
+        <button id="addTemplateBtn" class="btn btn-small">+ Tambah Template</button>
+        <button id="exportTemplatesBtn" class="btn btn-small">📤 Export</button>
+        <button id="importTemplatesBtn" class="btn btn-small">📥 Import</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Messages/Notifications -->
+  <div id="messageContainer" class="message-container">
+    <!-- Pesan akan ditampilkan di sini -->
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    <div class="footer-info">
+      <span>v1.0.0</span>
+      <span>•</span>
+      <span>Untuk Testing QA & Development</span>
+    </div>
+    <div class="footer-links">
+      <button id="helpBtn" class="btn btn-link">Bantuan</button>
+      <button id="aboutBtn" class="btn btn-link">Tentang</button>
+    </div>
+  </div>
+
+  <!-- Hidden file input for import -->
+  <input type="file" id="importFileInput" accept=".json" style="display: none;">
+
+  <!-- JavaScript -->
+  <script src="popup.js"></script>
+</body>
+</html>

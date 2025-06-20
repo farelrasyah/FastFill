@@ -1,0 +1,68 @@
+{
+  "name": "fastfill-chrome-extension",
+  "version": "1.0.0",
+  "description": "Chrome extension untuk auto-fill form testing dengan multiple templates data",
+  "main": "manifest.json",
+  "scripts": {
+    "build": "echo 'Building FastFill Extension...' && npm run validate",
+    "validate": "echo 'Validating manifest and files...' && node validate.js",
+    "pack": "echo 'Creating extension package...' && npm run build && zip -r fastfill-v1.0.0.zip . -x 'node_modules/*' '*.git*' 'validate.js' 'package*.json'",
+    "dev": "echo 'Starting development mode...' && echo 'Open Chrome Extensions and load unpacked from this directory'",
+    "test": "echo 'Open test-form.html in browser and test the extension'",
+    "clean": "rm -f *.zip",
+    "lint": "echo 'Linting JavaScript files...' && node -c *.js",
+    "install-dev": "echo 'No dependencies required for development'"
+  },
+  "keywords": [
+    "chrome-extension",
+    "auto-fill",
+    "form-filler", 
+    "qa-testing",
+    "automation",
+    "testing-tools",
+    "manifest-v3"
+  ],
+  "author": {
+    "name": "Farel Rasyah",
+    "email": "farel@example.com"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/farelrasyah/fastfill-extension.git"
+  },
+  "bugs": {
+    "url": "https://github.com/farelrasyah/fastfill-extension/issues"
+  },
+  "homepage": "https://github.com/farelrasyah/fastfill-extension#readme",
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "devDependencies": {},
+  "dependencies": {},
+  "files": [
+    "manifest.json",
+    "content.js",
+    "background.js", 
+    "popup.html",
+    "popup.js",
+    "style.css",
+    "icons/",
+    "README.md",
+    "INSTALL.md",
+    "API.md"
+  ],
+  "extensionInfo": {
+    "manifestVersion": 3,
+    "chromeMinVersion": "88",
+    "permissions": [
+      "activeTab",
+      "storage", 
+      "scripting"
+    ],
+    "hostPermissions": [
+      "http://*/*",
+      "https://*/*"
+    ]
+  }
+}

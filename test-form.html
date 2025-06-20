@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FastFill Test Form</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+    
+    .form-container {
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
+    }
+    
+    h1, h2 {
+      color: #333;
+      margin-bottom: 20px;
+    }
+    
+    .form-group {
+      margin-bottom: 15px;
+    }
+    
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: 500;
+      color: #555;
+    }
+    
+    input, select, textarea {
+      width: 100%;
+      padding: 10px;
+      border: 2px solid #ddd;
+      border-radius: 5px;
+      font-size: 14px;
+      box-sizing: border-box;
+    }
+    
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: #4c51bf;
+    }
+    
+    .form-row {
+      display: flex;
+      gap: 15px;
+    }
+    
+    .form-row .form-group {
+      flex: 1;
+    }
+    
+    .checkbox-group, .radio-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    
+    .checkbox-item, .radio-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .checkbox-item input, .radio-item input {
+      width: auto;
+    }
+    
+    button {
+      background: #4c51bf;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 5px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-right: 10px;
+    }
+    
+    button:hover {
+      background: #434190;
+    }
+    
+    .section {
+      margin-bottom: 30px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid #eee;
+    }
+    
+    .instructions {
+      background: #e6fffa;
+      padding: 15px;
+      border-radius: 5px;
+      border-left: 4px solid #38b2ac;
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="instructions">
+    <h3>🚀 FastFill Test Page</h3>
+    <p>Halaman ini dibuat untuk testing ekstensi FastFill. Gunakan langkah berikut:</p>
+    <ol>
+      <li>Install ekstensi FastFill di Chrome</li>
+      <li>Klik icon FastFill di toolbar</li>
+      <li>Pilih template data (QA Profile, User Profile, atau Dummy Data)</li>
+      <li>Klik "Deteksi Form" untuk mendeteksi form elements</li>
+      <li>Klik "Isi Form" untuk auto-fill semua fields</li>
+    </ol>
+  </div>
+
+  <!-- Personal Information Form -->
+  <div class="form-container">
+    <h2>📝 Form Informasi Personal</h2>
+    <form id="personalForm">
+      <div class="section">
+        <h3>Data Diri</h3>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="firstName">Nama Depan *</label>
+            <input type="text" id="firstName" name="firstName" placeholder="Masukkan nama depan" required>
+          </div>
+          <div class="form-group">
+            <label for="lastName">Nama Belakang *</label>
+            <input type="text" id="lastName" name="lastName" placeholder="Masukkan nama belakang" required>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label for="fullName">Nama Lengkap</label>
+          <input type="text" id="fullName" name="fullName" placeholder="Nama lengkap sesuai KTP">
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="email">Email *</label>
+            <input type="email" id="email" name="email" placeholder="contoh@email.com" required>
+          </div>
+          <div class="form-group">
+            <label for="phone">Nomor Telepon</label>
+            <input type="tel" id="phone" name="phone" placeholder="081234567890">
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="birthDate">Tanggal Lahir</label>
+            <input type="date" id="birthDate" name="birthDate">
+          </div>
+          <div class="form-group">
+            <label for="age">Umur</label>
+            <input type="number" id="age" name="age" min="1" max="120" placeholder="25">
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h3>Alamat</h3>
+        <div class="form-group">
+          <label for="address">Alamat Lengkap</label>
+          <textarea id="address" name="address" rows="3" placeholder="Jl. Nama Jalan No. XX, RT/RW"></textarea>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="city">Kota</label>
+            <input type="text" id="city" name="city" placeholder="Jakarta">
+          </div>
+          <div class="form-group">
+            <label for="country">Negara</label>
+            <select id="country" name="country">
+              <option value="">Pilih negara</option>
+              <option value="Indonesia">Indonesia</option>
+              <option value="Malaysia">Malaysia</option>
+              <option value="Singapore">Singapore</option>
+              <option value="Thailand">Thailand</option>
+              <option value="USA">United States</option>
+              <option value="UK">United Kingdom</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h3>Informasi Pekerjaan</h3>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="company">Nama Perusahaan</label>
+            <input type="text" id="company" name="company" placeholder="PT. Nama Perusahaan">
+          </div>
+          <div class="form-group">
+            <label for="jobTitle">Jabatan</label>
+            <input type="text" id="jobTitle" name="jobTitle" placeholder="Software Engineer">
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label for="salary">Gaji (per bulan)</label>
+          <input type="number" id="salary" name="salary" placeholder="5000000">
+        </div>
+        
+        <div class="form-group">
+          <label for="workDescription">Deskripsi Pekerjaan</label>
+          <textarea id="workDescription" name="workDescription" rows="4" placeholder="Deskripsikan pekerjaan dan tanggung jawab Anda"></textarea>
+        </div>
+      </div>
+
+      <div class="section">
+        <h3>Preferensi</h3>
+        <div class="form-group">
+          <label>Hobi (pilih yang sesuai)</label>
+          <div class="checkbox-group">
+            <div class="checkbox-item">
+              <input type="checkbox" id="hobby1" name="hobbies" value="reading">
+              <label for="hobby1">Membaca</label>
+            </div>
+            <div class="checkbox-item">
+              <input type="checkbox" id="hobby2" name="hobbies" value="sports">
+              <label for="hobby2">Olahraga</label>
+            </div>
+            <div class="checkbox-item">
+              <input type="checkbox" id="hobby3" name="hobbies" value="music">
+              <label for="hobby3">Musik</label>
+            </div>
+            <div class="checkbox-item">
+              <input type="checkbox" id="hobby4" name="hobbies" value="travel">
+              <label for="hobby4">Traveling</label>
+            </div>
+            <div class="checkbox-item">
+              <input type="checkbox" id="hobby5" name="hobbies" value="gaming">
+              <label for="hobby5">Gaming</label>
+            </div>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label>Tingkat Pendidikan</label>
+          <div class="radio-group">
+            <div class="radio-item">
+              <input type="radio" id="edu1" name="education" value="sma">
+              <label for="edu1">SMA/SMK</label>
+            </div>
+            <div class="radio-item">
+              <input type="radio" id="edu2" name="education" value="diploma">
+              <label for="edu2">Diploma</label>
+            </div>
+            <div class="radio-item">
+              <input type="radio" id="edu3" name="education" value="s1">
+              <label for="edu3">Sarjana (S1)</label>
+            </div>
+            <div class="radio-item">
+              <input type="radio" id="edu4" name="education" value="s2">
+              <label for="edu4">Magister (S2)</label>
+            </div>
+            <div class="radio-item">
+              <input type="radio" id="edu5" name="education" value="s3">
+              <label for="edu5">Doktor (S3)</label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h3>Security</h3>
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" name="password" placeholder="Masukkan password">
+        </div>
+        
+        <div class="form-group">
+          <label for="website">Website/Portfolio</label>
+          <input type="url" id="website" name="website" placeholder="https://www.example.com">
+        </div>
+      </div>
+
+      <div class="section">
+        <h3>Komentar</h3>
+        <div class="form-group">
+          <label for="comments">Catatan Tambahan</label>
+          <textarea id="comments" name="comments" rows="4" placeholder="Tuliskan komentar atau catatan tambahan di sini..."></textarea>
+        </div>
+      </div>
+
+      <button type="submit">Submit Form</button>
+      <button type="reset">Reset Form</button>
+    </form>
+  </div>
+
+  <!-- Additional Test Forms -->
+  <div class="form-container">
+    <h2>🔍 Quick Test Form</h2>
+    <form id="quickForm">
+      <div class="form-row">
+        <div class="form-group">
+          <label for="testName">Nama</label>
+          <input type="text" id="testName" name="testName" placeholder="Nama lengkap">
+        </div>
+        <div class="form-group">
+          <label for="testEmail">Email</label>
+          <input type="email" id="testEmail" name="testEmail" placeholder="email@example.com">
+        </div>
+      </div>
+      
+      <div class="form-row">
+        <div class="form-group">
+          <label for="testPhone">Telepon</label>
+          <input type="tel" id="testPhone" name="testPhone" placeholder="081234567890">
+        </div>
+        <div class="form-group">
+          <label for="testAge">Umur</label>
+          <input type="number" id="testAge" name="testAge" placeholder="25">
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <label for="testMessage">Pesan</label>
+        <textarea id="testMessage" name="testMessage" rows="3" placeholder="Tulis pesan Anda di sini..."></textarea>
+      </div>
+      
+      <button type="submit">Kirim</button>
+    </form>
+  </div>
+
+  <script>
+    // Simple form validation
+    document.getElementById('personalForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      alert('Form berhasil disubmit! (Demo - data tidak dikirim ke server)');
+    });
+
+    document.getElementById('quickForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      alert('Quick form berhasil disubmit!');
+    });
+
+    // Auto-fill detection indicator
+    let formFields = document.querySelectorAll('input, select, textarea');
+    console.log(`FastFill Test: Found ${formFields.length} form fields`);
+    
+    // Add visual indicator when fields are filled
+    formFields.forEach(field => {
+      field.addEventListener('input', function() {
+        if (this.value) {
+          this.style.borderColor = '#38a169';
+          this.style.backgroundColor = '#f0fff4';
+        } else {
+          this.style.borderColor = '#ddd';
+          this.style.backgroundColor = 'white';
+        }
+      });
+    });
+  </script>
+</body>
+</html>
