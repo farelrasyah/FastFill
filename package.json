@@ -1,15 +1,16 @@
-{
-  "name": "fastfill-chrome-extension",
-  "version": "1.0.0",
-  "description": "Chrome extension untuk auto-fill form testing dengan multiple templates data",
+{  "name": "fastfill-ai-extension",
+  "version": "2.0.0",
+  "description": "AI-powered Chrome extension untuk auto-fill form dengan Google Gemini Pro integration",
   "main": "manifest.json",
   "scripts": {
-    "build": "echo 'Building FastFill Extension...' && npm run validate",
+    "build": "node build-production.js",
+    "build:windows": "build.bat",
+    "build:clean": "build-clean.bat", 
     "validate": "echo 'Validating manifest and files...' && node validate.js",
-    "pack": "echo 'Creating extension package...' && npm run build && zip -r fastfill-v1.0.0.zip . -x 'node_modules/*' '*.git*' 'validate.js' 'package*.json'",
+    "pack": "echo 'Creating extension package...' && npm run build && zip -r fastfill-ai-v2.0.0.zip . -x 'node_modules/*' '*.git*' 'validate.js' 'package*.json' '.env' '*.backup'",
     "dev": "echo 'Starting development mode...' && echo 'Open Chrome Extensions and load unpacked from this directory'",
     "test": "echo 'Open test-form.html in browser and test the extension'",
-    "clean": "rm -f *.zip",
+    "clean": "rm -f *.zip *.backup",
     "lint": "echo 'Linting JavaScript files...' && node -c *.js",
     "install-dev": "echo 'No dependencies required for development'"
   },

@@ -1,0 +1,56 @@
+# FastFill AI Extension - Git Ignore Rules
+
+# Environment files dengan API keys
+.env
+.env.local
+.env.production
+.env.development
+
+# API Configuration files
+config/api-keys.js
+config/secrets.js
+api-config.js
+secrets.js
+
+# Development files
+.vscode/
+.idea/
+*.log
+debug.log
+error.log
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+
+# Node modules (jika ada)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Chrome extension development
+*.crx
+*.pem
+key.pem
+
+# Backup files
+*.bak
+*.backup
+*.old
+
+# User-specific files
+config.user.js
+settings.user.json

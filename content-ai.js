@@ -251,48 +251,58 @@ if (!window.fastFillAILoaded) {
             }
             return '';
         }
-    }
-
-    /**
+    }    /**
      * 🤖 GEMINI AI INTEGRATION
      * Handles communication with Gemini Pro API for intelligent form filling
+     * Uses embedded API key for seamless user experience
      */
     class GeminiFormFiller {
         constructor() {
             this.apiKey = null;
             this.baseURL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent';
             this.detector = new FormFieldDetector();
+            this.config = window.FastFillConfig || null;
         }
 
         /**
-         * Initialize with API key from storage
+         * Initialize with embedded API key
          */
         async initialize() {
+            // Use embedded API key from config
+            if (this.config && this.config.hasApiKey()) {
+                this.apiKey = this.config.getApiKey();
+                console.log('✅ Using embedded API key');
+                return this.apiKey;
+            }
+
+            // Fallback to user-provided API key from storage
             return new Promise((resolve) => {
                 chrome.storage.sync.get(['geminiApiKey'], (result) => {
-                    this.apiKey = result.geminiApiKey;
-                    if (!this.apiKey) {
-                        console.warn('⚠️ Gemini API key not found in storage');
-                        this.showNotification('❌ Please set Gemini API key in popup settings', 'error');
+                    if (result.geminiApiKey) {
+                        this.apiKey = result.geminiApiKey;
+                        console.log('✅ Using user-provided API key from storage');
+                    } else {
+                        // Use hardcoded API key as final fallback
+                        this.apiKey = 'AIzaSyARIKwnlrUeIxpGvTS5VhRxuR2HhWQCxoY';
+                        console.log('✅ Using fallback API key');
                     }
                     resolve(this.apiKey);
                 });
             });
-        }
-
-        /**
+        }        /**
          * 🎯 MAIN FUNCTION - AI-powered form filling
          * This is the main entry point for AI form filling
+         * No API key setup required - uses embedded key
          */
         async fillFormWithAI() {
             try {
                 console.log('🚀 Starting AI-powered form filling...');
                 
-                // Initialize API key
+                // Initialize with embedded API key
                 await this.initialize();
                 if (!this.apiKey) {
-                    this.showNotification('❌ Gemini API key required. Please set it in extension popup.', 'error');
-                    return { success: false, message: 'API key missing' };
+                    this.showNotification('❌ API configuration error. Please contact developer.', 'error');
+                    return { success: false, message: 'API key configuration error' };
                 }
 
                 // Step 1: Detect all fillable fields

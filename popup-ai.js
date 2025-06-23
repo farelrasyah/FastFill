@@ -15,13 +15,10 @@ class FastFillAIPopup {
         this.templates = this.getDefaultTemplates();
         
         this.init();
-    }
-
-    /**
+    }    /**
      * Initialize popup functionality
      */
     async init() {
-        await this.loadApiKeyStatus();
         await this.getCurrentTab();
         await this.detectFormsOnLoad();
         this.bindEvents();
@@ -40,173 +37,36 @@ class FastFillAIPopup {
             this.handleAIFormFill();
         });
 
-        // API Key management
-        document.getElementById('saveApiKey').addEventListener('click', () => {
-            this.saveApiKey();
-        });
-
-        document.getElementById('clearApiKey').addEventListener('click', () => {
-            this.clearApiKey();
-        });
-
-        document.getElementById('toggleApiKey').addEventListener('click', () => {
-            this.toggleApiKeyVisibility();
-        });
-
-        // Template filling (fallback)
-        document.getElementById('templateFormFill').addEventListener('click', () => {
-            this.handleTemplateFill();
-        });
-
         // Form detection
         document.getElementById('detectFields').addEventListener('click', () => {
             this.detectForms();
         });
 
-        // Settings and help
-        document.getElementById('settingsBtn').addEventListener('click', () => {
-            this.toggleApiSection();
+        // Help and about
+        document.getElementById('aboutBtn').addEventListener('click', () => {
+            this.showAbout();
         });
 
         document.getElementById('helpBtn').addEventListener('click', () => {
             this.showHelp();
         });
-
-        document.getElementById('aboutBtn').addEventListener('click', () => {
-            this.showAbout();
-        });
-
-        // API key input enter key
-        document.getElementById('apiKeyInput').addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                this.saveApiKey();
-            }
-        });
-
-        // Template selector change
-        document.getElementById('templateSelect').addEventListener('change', () => {
-            this.updateTemplatePreview();
-        });
-    }
-
-    /**
-     * 🗝️ API KEY MANAGEMENT
-     * Handle Gemini API key storage and validation
+    }    /**
+     * 🎨 UI MANAGEMENT
+     * Handle UI updates and interactions
      */
-    async loadApiKeyStatus() {
-        return new Promise((resolve) => {
-            chrome.storage.sync.get(['geminiApiKey'], (result) => {
-                const hasApiKey = !!result.geminiApiKey;
-                
-                if (hasApiKey) {
-                    this.updateApiKeyStatus('ready', '✅ API Key Configured');
-                    document.getElementById('aiFormFill').disabled = false;
-                    document.getElementById('apiKeyInput').value = '••••••••••••••••';
-                } else {
-                    this.updateApiKeyStatus('error', '⚠️ API Key Required');
-                    document.getElementById('aiFormFill').disabled = true;
-                }
-                
-                resolve(hasApiKey);
-            });
-        });
-    }
-
-    async saveApiKey() {
-        const apiKeyInput = document.getElementById('apiKeyInput');
-        const apiKey = apiKeyInput.value.trim();
-
-        if (!apiKey || apiKey === '••••••••••••••••') {
-            this.showMessage('Please enter a valid API key', 'error');
-            return;
-        }
-
-        // Basic validation
-        if (!apiKey.startsWith('AIza') || apiKey.length < 35) {
-            this.showMessage('Invalid API key format', 'error');
-            return;
-        }
-
-        // Test API key by making a simple request
-        this.showLoading(true);
+    updateUI() {
+        // Update version display
+        document.querySelector('.version').textContent = 'v2.0.0-ai';
         
-        try {
-            const testResult = await this.testApiKey(apiKey);
-            
-            if (testResult.success) {
-                // Save to storage
-                chrome.storage.sync.set({ geminiApiKey: apiKey }, () => {
-                    this.updateApiKeyStatus('ready', '✅ API Key Saved Successfully');
-                    document.getElementById('aiFormFill').disabled = false;
-                    apiKeyInput.value = '••••••••••••••••';
-                    this.showMessage('API key saved and validated!', 'success');
-                    
-                    // Send to content script
-                    this.sendMessageToTab({
-                        action: 'updateApiKey',
-                        apiKey: apiKey
-                    });
-                });
-            } else {
-                this.showMessage('API key validation failed: ' + testResult.error, 'error');
-            }
-        } catch (error) {
-            this.showMessage('Failed to validate API key: ' + error.message, 'error');
-        }
+        // Set initial stats
+        document.getElementById('detectedFields').textContent = '-';
+        document.getElementById('lastFilled').textContent = '-';
         
-        this.showLoading(false);
+        // Update AI status to ready
+        this.updateAIStatus('ready', '✅ Ready to Fill Forms');
     }
 
-    async testApiKey(apiKey) {
-        try {
-            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${apiKey}`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    contents: [{ parts: [{ text: 'Hello' }] }],
-                    generationConfig: { maxOutputTokens: 10 }
-                })
-            });
-
-            if (response.ok) {
-                return { success: true };
-            } else {
-                const errorData = await response.json();
-                return { 
-                    success: false, 
-                    error: errorData.error?.message || `HTTP ${response.status}` 
-                };
-            }
-        } catch (error) {
-            return { success: false, error: error.message };
-        }
-    }
-
-    clearApiKey() {
-        chrome.storage.sync.remove(['geminiApiKey'], () => {
-            this.updateApiKeyStatus('error', '⚠️ API Key Required');
-            document.getElementById('aiFormFill').disabled = true;
-            document.getElementById('apiKeyInput').value = '';
-            this.showMessage('API key cleared', 'info');
-        });
-    }
-
-    toggleApiKeyVisibility() {
-        const input = document.getElementById('apiKeyInput');
-        const button = document.getElementById('toggleApiKey');
-        
-        if (this.isApiKeyVisible) {
-            input.type = 'password';
-            button.textContent = '👁️';
-            this.isApiKeyVisible = false;
-        } else {
-            input.type = 'text';
-            button.textContent = '🙈';
-            this.isApiKeyVisible = true;
-        }
-    }
-
-    updateApiKeyStatus(status, message) {
+    updateAIStatus(status, message) {
         const statusElement = document.getElementById('aiStatus');
         const indicatorElement = document.getElementById('statusIndicator');
         const textElement = document.getElementById('statusText');
@@ -218,12 +78,56 @@ class FastFillAIPopup {
             case 'ready':
                 indicatorElement.textContent = '✅';
                 break;
+            case 'processing':
+                indicatorElement.textContent = '�';
+                break;
             case 'error':
                 indicatorElement.textContent = '❌';
                 break;
             default:
                 indicatorElement.textContent = '⚠️';
         }
+    }
+
+    showLoading(show) {
+        const overlay = document.getElementById('loadingOverlay');
+        overlay.style.display = show ? 'flex' : 'none';
+    }
+
+    setButtonLoading(buttonId, loading) {
+        const button = document.getElementById(buttonId);
+        const text = button.querySelector('.btn-text');
+        const loader = button.querySelector('.btn-loader');
+
+        if (loading) {
+            button.disabled = true;
+            if (text) text.style.opacity = '0.5';
+            if (loader) loader.style.display = 'inline';
+        } else {
+            button.disabled = false;
+            if (text) text.style.opacity = '1';
+            if (loader) loader.style.display = 'none';
+        }
+    }    showMessage(message, type = 'info') {
+        // Remove existing message
+        const existing = document.querySelector('.message');
+        if (existing) existing.remove();
+
+        // Create message element
+        const messageEl = document.createElement('div');
+        messageEl.className = `message ${type}-message`;
+        messageEl.textContent = message;
+
+        // Insert after first section
+        const firstSection = document.querySelector('.section');
+        firstSection.insertAdjacentElement('afterend', messageEl);
+
+        // Auto remove after delay
+        setTimeout(() => {
+            if (messageEl.parentNode) {
+                messageEl.remove();
+            }
+        }, type === 'error' ? 6000 : 4000);
     }
 
     /**
@@ -234,6 +138,7 @@ class FastFillAIPopup {
         try {
             this.showLoading(true);
             this.setButtonLoading('aiFormFill', true);
+            this.updateAIStatus('processing', '🔄 Processing...');
 
             const response = await this.sendMessageToTab({
                 action: 'fillFormWithAI'
@@ -247,6 +152,7 @@ class FastFillAIPopup {
                 
                 // Update stats
                 document.getElementById('lastFilled').textContent = response.filledCount;
+                this.updateAIStatus('ready', '✅ Form Filled Successfully');
                 
                 if (response.fallback) {
                     this.showMessage('ℹ️ Used fallback template due to AI limitations', 'info');
@@ -258,45 +164,15 @@ class FastFillAIPopup {
         } catch (error) {
             console.error('❌ AI form fill error:', error);
             this.showMessage(`❌ AI filling failed: ${error.message}`, 'error');
+            this.updateAIStatus('error', '❌ Fill Failed');
         } finally {
             this.showLoading(false);
             this.setButtonLoading('aiFormFill', false);
-        }
-    }
-
-    /**
-     * 📋 TEMPLATE FILLING (FALLBACK)
-     * Handle traditional template-based form filling
-     */
-    async handleTemplateFill() {
-        const templateSelect = document.getElementById('templateSelect');
-        const selectedTemplate = templateSelect.value;
-
-        if (!selectedTemplate) {
-            this.showMessage('Please select a template first', 'warning');
-            return;
-        }
-
-        try {
-            this.setButtonLoading('templateFormFill', true);
-
-            const templateData = this.templates[selectedTemplate];
-            const response = await this.sendMessageToTab({
-                action: 'fillForm',
-                templateData: templateData
-            });
-
-            if (response && response.success) {
-                this.showMessage(`📋 Template filled successfully!`, 'success');
-            } else {
-                throw new Error(response?.message || 'Template filling failed');
-            }
-
-        } catch (error) {
-            console.error('❌ Template fill error:', error);
-            this.showMessage(`❌ Template filling failed: ${error.message}`, 'error');
-        } finally {
-            this.setButtonLoading('templateFormFill', false);
+            
+            // Reset status after delay
+            setTimeout(() => {
+                this.updateAIStatus('ready', '✅ Ready to Fill Forms');
+            }, 3000);
         }
     }
 
@@ -363,80 +239,6 @@ class FastFillAIPopup {
                 }
             });
         });
-    }
-
-    /**
-     * 🎨 UI MANAGEMENT
-     * Handle UI updates and interactions
-     */
-    updateUI() {
-        // Update version display
-        document.querySelector('.version').textContent = 'v2.0.0-ai';
-        
-        // Set initial stats
-        document.getElementById('detectedFields').textContent = '-';
-        document.getElementById('lastFilled').textContent = '-';
-    }
-
-    showLoading(show) {
-        const overlay = document.getElementById('loadingOverlay');
-        overlay.style.display = show ? 'flex' : 'none';
-    }
-
-    setButtonLoading(buttonId, loading) {
-        const button = document.getElementById(buttonId);
-        const text = button.querySelector('.btn-text');
-        const loader = button.querySelector('.btn-loader');
-
-        if (loading) {
-            button.disabled = true;
-            if (text) text.style.opacity = '0.5';
-            if (loader) loader.style.display = 'inline';
-        } else {
-            button.disabled = false;
-            if (text) text.style.opacity = '1';
-            if (loader) loader.style.display = 'none';
-        }
-    }
-
-    showMessage(message, type = 'info') {
-        // Remove existing message
-        const existing = document.querySelector('.message');
-        if (existing) existing.remove();
-
-        // Create message element
-        const messageEl = document.createElement('div');
-        messageEl.className = `message ${type}-message`;
-        messageEl.textContent = message;
-
-        // Insert after first section
-        const firstSection = document.querySelector('.section');
-        firstSection.insertAdjacentElement('afterend', messageEl);
-
-        // Auto remove after delay
-        setTimeout(() => {
-            if (messageEl.parentNode) {
-                messageEl.remove();
-            }
-        }, type === 'error' ? 6000 : 4000);
-    }
-
-    toggleApiSection() {
-        const apiSection = document.getElementById('apiSection');
-        const isHidden = apiSection.style.display === 'none';
-        
-        apiSection.style.display = isHidden ? 'block' : 'none';
-        document.getElementById('settingsBtn').textContent = isHidden ? '⚙️' : '❌';
-    }
-
-    updateTemplatePreview() {
-        // This could show a preview of selected template data
-        const templateSelect = document.getElementById('templateSelect');
-        const selectedTemplate = templateSelect.value;
-        
-        if (selectedTemplate && this.templates[selectedTemplate]) {
-            console.log('Template selected:', selectedTemplate);
-        }
     }
 
     /**
