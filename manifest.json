@@ -1,17 +1,17 @@
 {
   "manifest_version": 3,
-  "name": "FastFill - Auto Form Filler",
-  "version": "1.1.0",
-  "description": "Ekstensi Chrome untuk mengisi form secara otomatis dengan data template yang dapat disesuaikan. Ideal untuk QA testing dan development.",  "permissions": [
+  "name": "FastFill - Auto Form Filler",  "version": "2.0.0",
+  "description": "AI-powered Chrome extension untuk mengisi form secara otomatis menggunakan Google Gemini Pro. Ideal untuk QA testing, development, dan automation.","permissions": [
     "activeTab",
-    "storage"
+    "storage",
+    "https://generativelanguage.googleapis.com/*"
   ],
   "host_permissions": [
-    "<all_urls>"
-  ],
-  "action": {
-    "default_popup": "popup.html",
-    "default_title": "FastFill - Auto Form Filler",
+    "<all_urls>",
+    "https://generativelanguage.googleapis.com/*"
+  ],  "action": {
+    "default_popup": "popup-ai.html",
+    "default_title": "FastFill AI - Smart Form Filler",
     "default_icon": {
       "16": "icons/icon16.png",
       "32": "icons/icon16.png",
@@ -21,7 +21,7 @@
   },  "content_scripts": [
     {
       "matches": ["<all_urls>"],
-      "js": ["content.js"],
+      "js": ["content-ai.js"],
       "run_at": "document_idle",
       "all_frames": false
     }

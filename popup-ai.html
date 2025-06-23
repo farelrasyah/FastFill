@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FastFill AI - Smart Form Filler</title>
+    <link rel="stylesheet" href="popup-ai.css">
+</head>
+<body>
+    <!-- Header Section -->
+    <div class="header">
+        <div class="logo">
+            <div class="logo-icon">🤖</div>
+            <div class="logo-text">
+                <h1>FastFill AI</h1>
+                <span class="version">v2.0.0</span>
+            </div>
+        </div>
+        <div class="header-actions">
+            <button class="btn-ghost" id="settingsBtn" title="Settings">⚙️</button>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container">
+        <!-- AI Form Filling Section -->
+        <div class="section">
+            <div class="section-header">
+                <h3>🤖 AI-Powered Form Filling</h3>
+                <p>Uses Google Gemini Pro to intelligently fill any form</p>
+            </div>
+            
+            <div class="ai-status" id="aiStatus">
+                <span class="status-indicator" id="statusIndicator">⚠️</span>
+                <span id="statusText">API Key Required</span>
+            </div>
+
+            <button class="btn btn-primary btn-large" id="aiFormFill" disabled>
+                <span class="btn-icon">🤖</span>
+                <span class="btn-text">Fill Form with AI</span>
+                <span class="btn-loader" id="aiLoader" style="display: none;">⏳</span>
+            </button>
+
+            <div class="shortcut-hint">
+                💡 Quick shortcut: <kbd>Alt</kbd> + <kbd>Shift</kbd> + <kbd>F</kbd>
+            </div>
+        </div>
+
+        <!-- API Key Configuration -->
+        <div class="section" id="apiSection">
+            <div class="section-header">
+                <h3>🔑 Gemini API Configuration</h3>
+                <p>Enter your Google Gemini Pro API key</p>
+            </div>
+            
+            <div class="api-config">
+                <div class="input-group">
+                    <input type="password" id="apiKeyInput" placeholder="Enter your Gemini API key..." class="api-input">
+                    <button class="btn btn-ghost" id="toggleApiKey" title="Show/Hide API Key">👁️</button>
+                </div>
+                
+                <div class="api-actions">
+                    <button class="btn btn-success" id="saveApiKey">Save API Key</button>
+                    <button class="btn btn-danger" id="clearApiKey">Clear</button>
+                </div>
+                
+                <div class="api-help">
+                    <p>🔗 <a href="https://makersuite.google.com/app/apikey" target="_blank">Get your free Gemini API key</a></p>
+                    <p>✅ Your API key is stored securely in your browser</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Template Section (Fallback) -->
+        <div class="section">
+            <div class="section-header">
+                <h3>📋 Template Filling (Fallback)</h3>
+                <p>Traditional template-based form filling</p>
+            </div>
+            
+            <div class="template-selector">
+                <select id="templateSelect" class="template-select">
+                    <option value="">Select Template...</option>
+                    <option value="qa-profile">QA Tester Profile</option>
+                    <option value="user-profile">User Profile</option>
+                    <option value="dummy-profile">Dummy Profile</option>
+                </select>
+                
+                <button class="btn btn-secondary" id="templateFormFill">
+                    <span class="btn-icon">📋</span>
+                    Fill with Template
+                </button>
+            </div>
+        </div>
+
+        <!-- Statistics -->
+        <div class="section">
+            <div class="stats">
+                <div class="stat-item">
+                    <span class="stat-number" id="detectedFields">-</span>
+                    <span class="stat-label">Fields Detected</span>
+                </div>
+                
+                <div class="stat-item">
+                    <span class="stat-number" id="lastFilled">-</span>
+                    <span class="stat-label">Last Filled</span>
+                </div>
+            </div>
+            
+            <button class="btn btn-ghost" id="detectFields">
+                <span class="btn-icon">🔍</span>
+                Scan Page for Forms
+            </button>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <div class="footer-links">
+                <a href="#" id="helpBtn">❓ Help</a>
+                <a href="#" id="aboutBtn">ℹ️ About</a>
+            </div>
+            <div class="footer-text">
+                Powered by Google Gemini AI
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay" style="display: none;">
+        <div class="loading-content">
+            <div class="spinner">🤖</div>
+            <p>AI is analyzing the form...</p>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="popup-ai.js"></script>
+</body>
+</html>
